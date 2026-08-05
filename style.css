@@ -116,6 +116,7 @@ html, body {
   font-size: clamp(.78rem, .78vw, 1rem);
   color: rgba(255, 255, 255, .86);
   font-weight: 500;
+  transition: opacity 320ms ease, transform 420ms cubic-bezier(.16, 1, .3, 1), visibility 320ms;
 }
 .sub-metrics .metric { display: flex; align-items: center; gap: 4px; }
 .sub-metrics .metric svg {
@@ -123,7 +124,11 @@ html, body {
   height: clamp(14px, 1vw, 20px);
 }
 .sub-metrics .dot { display: none; }
-.header-right { display: flex; gap: clamp(8px, .6vw, 12px); }
+.header-right {
+  display: flex;
+  gap: clamp(8px, .6vw, 12px);
+  transition: opacity 320ms ease, transform 420ms cubic-bezier(.16, 1, .3, 1), visibility 320ms;
+}
 
 /* ==========================================================================
    VHS STAGE WRAPPER  ─  relative container for both layers
@@ -734,7 +739,7 @@ body.game-active .game-skip-button {
 .top-header,
 .bottom-gradient,
 .scroll-prompt {
-  transition: visibility .15s ease;
+  transition: opacity 420ms ease, visibility 420ms ease;
 }
 
 body.game-chrome-hidden .top-header,
@@ -1638,53 +1643,19 @@ body.game-chrome-hidden .scroll-prompt {
   transform: translateY(0);
 }
 
-.scenario-header {
-  position: absolute;
-  z-index: 20;
-  top: 40px;
-  left: 50%;
-  width: 327px;
-  max-width: 90vw;
-  height: 42.6667px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 28px;
-  border: 1px solid rgb(15 23 42 / .12);
-  border-radius: 24px;
-  background: rgb(255 255 255 / .9);
-  box-shadow: 0 8px 24px rgb(0 0 0 / .16);
-  transform: translateX(-50%);
-  backdrop-filter: blur(16px);
+html.scenario-open .top-header {
+  z-index: 1020;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }
 
-.scenario-header h2 {
-  color: #0f172a;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: -.4px;
-  white-space: nowrap;
-}
-
-.scenario-back-button {
-  position: fixed;
-  z-index: 21;
-  top: 61.3333px;
-  left: clamp(14px, 2.3vw, 44px);
-  width: clamp(40px, 3.86vw, 74px);
-  padding: 0;
-  border: 0;
-  background: transparent;
-  cursor: pointer;
-  transform: translateY(-50%);
-}
-
-.scenario-back-button img {
-  width: 100%;
-  display: block;
-  user-select: none;
-  -webkit-user-drag: none;
+html.scenario-open .header-right,
+html.scenario-open .sub-metrics {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-6px);
 }
 
 .canvas-track {
@@ -1723,7 +1694,15 @@ body.game-chrome-hidden .scroll-prompt {
   border-radius: 20px;
   background: rgb(255 255 255 / .88);
   box-shadow: 0 8px 24px rgb(15 23 42 / .12);
-  transform: translateX(-50%);
+  opacity: 0;
+  transform: translate(-50%, 12px);
+  transition: opacity 360ms ease, transform 520ms cubic-bezier(.16, 1, .3, 1);
+}
+
+.scenario-canvas-stage.active .canvas-pagination {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  transition-delay: 160ms;
 }
 
 .pagination-dots {

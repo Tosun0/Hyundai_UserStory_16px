@@ -3,7 +3,8 @@ export function initScenarioCanvas({ onReturnToGame }) {
   const track = document.querySelector("#scenarioTrack");
   const counter = document.querySelector("#scenarioCounter");
   const dots = [...document.querySelectorAll("#scenarioIndicator .p-dot")];
-  const back = document.querySelector("#scenarioBackButton");
+  const back = document.querySelector("#rewindBtn");
+  const backLabel = back?.getAttribute("aria-label") ?? "";
   const total = dots.length;
   let index = 0;
   let openState = false;
@@ -29,6 +30,7 @@ export function initScenarioCanvas({ onReturnToGame }) {
     root.classList.add("active");
     root.setAttribute("aria-hidden", "false");
     document.documentElement.classList.add("scenario-open");
+    back?.setAttribute("aria-label", "게임으로 돌아가기");
     render();
   }
 
@@ -37,6 +39,7 @@ export function initScenarioCanvas({ onReturnToGame }) {
     root.classList.remove("active");
     root.setAttribute("aria-hidden", "true");
     document.documentElement.classList.remove("scenario-open");
+    back?.setAttribute("aria-label", backLabel);
     onReturnToGame();
   }
 

@@ -16,6 +16,8 @@ assert.match(html, /id="sq01"/);
 assert.match(html, /id="filmStory"/);
 assert.match(html, /id="sq08"/);
 assert.match(html, /id="scenarioCanvas"/);
+assert.doesNotMatch(html, /scenario-header|scenarioBackButton/);
+assert.match(scenarioModule, /#rewindBtn/);
 assert.doesNotMatch(`${html}\n${app}`, /_(?:Comp|Img|Footage)\b/);
 assert.match(game, /canvas-playbook:scenario-open/);
 assert.match(game, /canvas-playbook:game-complete/);

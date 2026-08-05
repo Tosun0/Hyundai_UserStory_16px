@@ -30,7 +30,11 @@ export function initVhsIntro() {
   }
 
   prompt?.addEventListener("click", () => document.querySelector("#sq02")?.scrollIntoView({ behavior: "smooth" }));
-  rewind?.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+  rewind?.addEventListener("click", () => {
+    if (!document.documentElement.classList.contains("scenario-open")) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  });
 
   return { update };
 }
