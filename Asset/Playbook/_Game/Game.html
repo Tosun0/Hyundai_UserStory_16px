@@ -459,6 +459,7 @@
   }
 
   function beginMode(m){
+    window.parent.postMessage({type:'canvas-playbook:game-started'},'*');
     mode=m; round=0; roundPlan=createRoundPlan(m); results[m]=[];
     hud.style.display='flex';
     el('hudMode').textContent = m==='young'?'20대의 눈':'60대의 눈';
@@ -663,7 +664,9 @@
     el('analysisOverall').textContent=overall;
     el('resultAnalysis').style.display='block';
     clearTimeout(scenarioTimer);
-    scenarioTimer=setTimeout(requestScenarioCanvas,1600);
+    scenarioTimer=setTimeout(()=>{
+      window.parent.postMessage({type:'canvas-playbook:game-complete'},'*');
+    },1600);
   }
 
   // ---- Events ----

@@ -3,6 +3,7 @@ import { access, readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { shouldAdvanceToGame } from "./modules/film-story.js";
+import { nextGameProgress } from "./modules/game-sequence.js";
 
 const root = dirname(fileURLToPath(import.meta.url));
 const html = await readFile(resolve(root, "index.html"), "utf8");
@@ -17,13 +18,19 @@ assert.match(html, /id="sq08"/);
 assert.match(html, /id="scenarioCanvas"/);
 assert.doesNotMatch(`${html}\n${app}`, /_(?:Comp|Img|Footage)\b/);
 assert.match(game, /canvas-playbook:scenario-open/);
-assert.match(game, /scenarioTimer=setTimeout\(requestScenarioCanvas,1600\)/);
+assert.match(game, /canvas-playbook:game-complete/);
+assert.match(game, /canvas-playbook:game-started/);
 assert.match(gameModule, /canvas-playbook:game-reset/);
+assert.match(gameModule, /type === "canvas-playbook:scenario-open"/);
+assert.match(gameModule, /type === "canvas-playbook:game-complete" && root\.classList\.contains\("is-active"\)/);
 assert.match(scenarioModule, /onReturnToGame\(\)/);
 assert.equal(shouldAdvanceToGame({ sequence: 7, step: 2, direction: 1, locked: false }), true);
 assert.equal(shouldAdvanceToGame({ sequence: 7, step: 1, direction: 1, locked: false }), false);
 assert.equal(shouldAdvanceToGame({ sequence: 7, step: 2, direction: -1, locked: false }), false);
 assert.equal(shouldAdvanceToGame({ sequence: 7, step: 2, direction: 1, locked: true }), false);
+assert.equal(nextGameProgress("not-started", "canvas-playbook:game-started"), "playing");
+assert.equal(nextGameProgress("playing", "canvas-playbook:game-complete"), "completed");
+assert.equal(nextGameProgress("completed", "canvas-playbook:game-reset"), "completed");
 
 const localAssets = [...html.matchAll(/(?:src|href)="([^"?#]+)(?:[?#][^"]*)?"/g)]
   .map(([, path]) => path)
