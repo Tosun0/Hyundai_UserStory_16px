@@ -24,6 +24,8 @@ assert.match(gameModule, /canvas-playbook:game-reset/);
 assert.match(gameModule, /type === "canvas-playbook:scenario-open"/);
 assert.match(gameModule, /type === "canvas-playbook:game-complete" && root\.classList\.contains\("is-active"\)/);
 assert.match(scenarioModule, /onReturnToGame\(\)/);
+assert.match(scenarioModule, /clearTimeout\(wheelUnlockTimer\)/);
+assert.match(scenarioModule, /setTimeout\(\(\) => \{ wheelLocked = false; \}, 180\)/);
 assert.equal(shouldAdvanceToGame({ sequence: 7, step: 2, direction: 1, locked: false }), true);
 assert.equal(shouldAdvanceToGame({ sequence: 7, step: 1, direction: 1, locked: false }), false);
 assert.equal(shouldAdvanceToGame({ sequence: 7, step: 2, direction: -1, locked: false }), false);

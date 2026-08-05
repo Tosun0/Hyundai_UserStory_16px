@@ -8,6 +8,7 @@ export function initScenarioCanvas({ onReturnToGame }) {
   let index = 0;
   let openState = false;
   let wheelLocked = false;
+  let wheelUnlockTimer;
   let touchStartX = 0;
   let touchStartY = 0;
 
@@ -40,13 +41,15 @@ export function initScenarioCanvas({ onReturnToGame }) {
   }
 
   window.addEventListener("wheel", (event) => {
-    if (!openState || wheelLocked || Math.abs(event.deltaY) < 12) return;
+    if (!openState) return;
     event.preventDefault();
+    window.clearTimeout(wheelUnlockTimer);
+    wheelUnlockTimer = window.setTimeout(() => { wheelLocked = false; }, 180);
+    if (wheelLocked || Math.abs(event.deltaY) < 12) return;
     wheelLocked = true;
     const direction = Math.sign(event.deltaY);
     if (direction < 0 && index === 0) close();
     else move(direction);
-    window.setTimeout(() => { wheelLocked = false; }, 500);
   }, { passive: false });
   window.addEventListener("touchstart", (event) => {
     if (!openState) return;
