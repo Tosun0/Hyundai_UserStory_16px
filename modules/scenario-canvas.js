@@ -48,7 +48,7 @@ export function initScenarioCanvas({ onReturnToGame }) {
     event.preventDefault();
     window.clearTimeout(wheelUnlockTimer);
     wheelUnlockTimer = window.setTimeout(() => { wheelLocked = false; }, 180);
-    if (wheelLocked || Math.abs(event.deltaY) < 12) return;
+    if (wheelLocked || !event.deltaY) return;
     wheelLocked = true;
     const direction = Math.sign(event.deltaY);
     if (direction < 0 && index === 0) close();

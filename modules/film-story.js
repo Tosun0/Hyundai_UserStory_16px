@@ -113,7 +113,7 @@ export function initFilmStory() {
   }
 
   window.addEventListener("wheel", (event) => {
-    if (Math.abs(event.deltaY) < 12 || !advanceToGame(Math.sign(event.deltaY))) return;
+    if (!event.deltaY || !advanceToGame(Math.sign(event.deltaY))) return;
     event.preventDefault();
   }, { passive: false });
   window.addEventListener("touchstart", (event) => {
