@@ -1623,7 +1623,7 @@ body.game-chrome-hidden .scroll-prompt {
   z-index: 1000;
   inset: 0;
   overflow: hidden;
-  background: rgb(6 15 10 / .52);
+  background: #354b3b;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
