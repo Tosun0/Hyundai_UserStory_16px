@@ -11,6 +11,7 @@ const app = await readFile(resolve(root, "app.js"), "utf8");
 const game = await readFile(resolve(root, "Asset/Playbook/_Game/Game.html"), "utf8");
 const gameModule = await readFile(resolve(root, "modules/game-sequence.js"), "utf8");
 const scenarioModule = await readFile(resolve(root, "modules/scenario-canvas.js"), "utf8");
+const style = await readFile(resolve(root, "style.css"), "utf8");
 
 assert.match(html, /id="sq01"/);
 assert.match(html, /id="filmStory"/);
@@ -20,6 +21,8 @@ assert.match(html, /history\.scrollRestoration = "manual"/);
 assert.match(html, /event\.persisted/);
 assert.doesNotMatch(html, /scenario-header|scenarioBackButton/);
 assert.match(scenarioModule, /#rewindBtn/);
+assert.match(style, /scenario-header-arrive/);
+assert.match(style, /scenario-canvas-stage:not\(\.active\) \.canvas-slide img/);
 assert.doesNotMatch(`${html}\n${app}`, /_(?:Comp|Img|Footage)\b/);
 assert.match(game, /canvas-playbook:scenario-open/);
 assert.match(game, /canvas-playbook:game-complete/);

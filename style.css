@@ -1580,6 +1580,10 @@ body.game-chrome-hidden .scroll-prompt {
   .film-section__title,
   .film-section__frame { transform: none; filter: none; }
   .sequence-copy { animation: none; }
+  html.scenario-open .top-header,
+  .scenario-canvas-stage,
+  .canvas-slide img,
+  .canvas-pagination { animation: none; transition: none; }
   .vhs-label-title span::before,
   .title-highlight::before,
   .sequence-title .title-highlight::before {
@@ -1648,6 +1652,7 @@ html.scenario-open .top-header {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
+  animation: scenario-header-arrive 560ms cubic-bezier(.16, 1, .3, 1) both;
 }
 
 html.scenario-open .header-right,
@@ -1679,6 +1684,15 @@ html.scenario-open .sub-metrics {
   max-height: 80%;
   object-fit: contain;
   user-select: none;
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition: opacity 560ms ease, transform 720ms cubic-bezier(.16, 1, .3, 1);
+  transition-delay: 120ms;
+}
+
+.scenario-canvas-stage:not(.active) .canvas-slide img {
+  opacity: 0;
+  transform: translateY(22px) scale(.985);
 }
 
 .canvas-pagination {
@@ -1732,6 +1746,11 @@ html.scenario-open .sub-metrics {
   font-weight: 800;
   letter-spacing: .5px;
   font-variant-numeric: tabular-nums;
+}
+
+@keyframes scenario-header-arrive {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @media (max-width: 760px) and (orientation: portrait) {
