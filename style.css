@@ -298,7 +298,12 @@ html, body {
   transform: translateX(-50%);
   z-index: 100;
   display: flex; flex-direction: column; align-items: center; gap: 4px;
-  color: rgba(255, 255, 255, 0.88);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 1px 8px rgb(0 0 0 / .45);
+  -webkit-appearance: none;
   cursor: pointer;
   opacity: calc(1 - var(--sq01-exit, 0));
   transition: transform 0.3s ease;

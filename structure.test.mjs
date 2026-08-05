@@ -24,6 +24,7 @@ assert.match(scenarioModule, /#rewindBtn/);
 assert.match(style, /scenario-header-arrive/);
 assert.match(style, /scenario-canvas-stage:not\(\.active\) \.canvas-slide img/);
 assert.doesNotMatch(`${game}\n${scenarioModule}`, /deltaY.*(?:12|32)/);
+assert.match(style, /\.scroll-prompt[\s\S]*background: transparent/);
 assert.doesNotMatch(`${html}\n${app}`, /_(?:Comp|Img|Footage)\b/);
 assert.match(game, /canvas-playbook:scenario-open/);
 assert.match(game, /canvas-playbook:game-complete/);
