@@ -14,6 +14,17 @@
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://hyundai-user-story-16px.vercel.app/Asset/Thumbnail/T_Thumbnail.png">
+  <script>
+    history.scrollRestoration = "manual";
+    window.addEventListener("beforeunload", () => window.scrollTo(0, 0));
+    window.addEventListener("pageshow", (event) => {
+      if (event.persisted) {
+        location.reload();
+        return;
+      }
+      requestAnimationFrame(() => window.scrollTo(0, 0));
+    });
+  </script>
   <link rel="stylesheet" href="style.css?v=20260805-scenario-ui-r1">
 </head>
 <body>
