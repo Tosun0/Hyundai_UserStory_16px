@@ -1,4 +1,4 @@
-export function initScenarioCanvas() {
+export function initScenarioCanvas({ onReturnToGame }) {
   const root = document.querySelector("#scenarioCanvas");
   const track = document.querySelector("#scenarioTrack");
   const counter = document.querySelector("#scenarioCounter");
@@ -31,15 +31,12 @@ export function initScenarioCanvas() {
     render();
   }
 
-  function close(returnToStart = true) {
+  function close() {
     openState = false;
     root.classList.remove("active");
     root.setAttribute("aria-hidden", "true");
     document.documentElement.classList.remove("scenario-open");
-    if (returnToStart) {
-      document.body.classList.remove("game-active", "game-entering", "game-chrome-hidden");
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
+    onReturnToGame();
   }
 
   window.addEventListener("wheel", (event) => {
@@ -47,7 +44,7 @@ export function initScenarioCanvas() {
     event.preventDefault();
     wheelLocked = true;
     const direction = Math.sign(event.deltaY);
-    if (direction < 0 && index === 0) close(false);
+    if (direction < 0 && index === 0) close();
     else move(direction);
     window.setTimeout(() => { wheelLocked = false; }, 500);
   }, { passive: false });
@@ -62,14 +59,14 @@ export function initScenarioCanvas() {
     const distanceY = touchStartY - event.changedTouches[0].clientY;
     if (Math.abs(distanceX) < 40 && Math.abs(distanceY) < 40) return;
     const direction = Math.sign(Math.abs(distanceX) > Math.abs(distanceY) ? distanceX : distanceY);
-    if (direction < 0 && index === 0) close(false);
+    if (direction < 0 && index === 0) close();
     else move(direction);
   }, { passive: true });
   dots.forEach((dot) => dot.addEventListener("click", () => {
     index = Number(dot.dataset.index);
     render();
   }));
-  back?.addEventListener("click", () => close(true));
+  back?.addEventListener("click", close);
 
   return { open, isOpen: () => openState };
 }

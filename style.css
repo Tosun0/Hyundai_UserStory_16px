@@ -309,7 +309,7 @@ html, body {
    SCROLL STORY SECTIONS
    ========================================================================== */
 .scroll-sequences {
-  position: relative; z-index: 15; padding-bottom: 20vh;
+  position: relative; z-index: 15; padding-bottom: 0;
 }
 
 /* ==========================================================================
@@ -433,7 +433,7 @@ html, body {
 
 .game-transition-spacer {
   position: relative;
-  height: 160vh;
+  height: 72vh;
   pointer-events: none;
 }
 
@@ -1670,13 +1670,14 @@ body.game-chrome-hidden .scroll-prompt {
 .scenario-back-button {
   position: fixed;
   z-index: 21;
-  top: clamp(18px, 2.96vh, 32px);
+  top: 61.3333px;
   left: clamp(14px, 2.3vw, 44px);
   width: clamp(40px, 3.86vw, 74px);
   padding: 0;
   border: 0;
   background: transparent;
   cursor: pointer;
+  transform: translateY(-50%);
 }
 
 .scenario-back-button img {

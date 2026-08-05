@@ -5,8 +5,9 @@ import { initScenarioCanvas } from "./modules/scenario-canvas.js";
 
 const intro = initVhsIntro();
 const filmStory = initFilmStory();
-const scenarioCanvas = initScenarioCanvas();
-initGameSequence({ onComplete: scenarioCanvas.open });
+let gameSequence;
+const scenarioCanvas = initScenarioCanvas({ onReturnToGame: () => gameSequence.reset() });
+gameSequence = initGameSequence({ onComplete: scenarioCanvas.open });
 
 let frameRequested = false;
 

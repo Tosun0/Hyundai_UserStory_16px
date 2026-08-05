@@ -7,6 +7,8 @@ const root = dirname(fileURLToPath(import.meta.url));
 const html = await readFile(resolve(root, "index.html"), "utf8");
 const app = await readFile(resolve(root, "app.js"), "utf8");
 const game = await readFile(resolve(root, "Asset/Playbook/_Game/Game.html"), "utf8");
+const gameModule = await readFile(resolve(root, "modules/game-sequence.js"), "utf8");
+const scenarioModule = await readFile(resolve(root, "modules/scenario-canvas.js"), "utf8");
 
 assert.match(html, /id="sq01"/);
 assert.match(html, /id="filmStory"/);
@@ -15,6 +17,8 @@ assert.match(html, /id="scenarioCanvas"/);
 assert.doesNotMatch(`${html}\n${app}`, /_(?:Comp|Img|Footage)\b/);
 assert.match(game, /canvas-playbook:scenario-open/);
 assert.match(game, /scenarioTimer=setTimeout\(requestScenarioCanvas,1600\)/);
+assert.match(gameModule, /canvas-playbook:game-reset/);
+assert.match(scenarioModule, /onReturnToGame\(\)/);
 
 const localAssets = [...html.matchAll(/(?:src|href)="([^"?#]+)(?:[?#][^"]*)?"/g)]
   .map(([, path]) => path)

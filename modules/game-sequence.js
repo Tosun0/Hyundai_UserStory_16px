@@ -14,6 +14,11 @@ export function initGameSequence({ onComplete }) {
     onComplete();
   };
 
+  const reset = () => {
+    frame?.contentWindow?.postMessage({ type: "canvas-playbook:game-reset" }, "*");
+    syncVisibility(true);
+  };
+
   const observer = new IntersectionObserver((entries) => {
     const ratio = entries.reduce((highest, entry) => entry.isIntersecting ? Math.max(highest, entry.intersectionRatio) : highest, 0);
     const active = ratio >= .995;
@@ -33,4 +38,6 @@ export function initGameSequence({ onComplete }) {
   });
   skip?.addEventListener("click", openScenario);
   observer.observe(root);
+
+  return { reset };
 }

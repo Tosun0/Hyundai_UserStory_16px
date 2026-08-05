@@ -49,8 +49,8 @@ export function initFilmStory() {
     const exit = Math.min(Math.max((storyBottom - scrollY) / (viewHeight * .08), 0), 1);
     const visible = Math.min(enter, exit);
     const spacerTop = transitionSpacer ? transitionSpacer.getBoundingClientRect().top + scrollY : storyBottom;
-    const transitionStart = spacerTop + (transitionSpacer?.offsetHeight ?? 0) - (viewHeight / .7);
-    const transition = Math.min(Math.max((scrollY - transitionStart) / (viewHeight / .7), 0), 1);
+    const transitionDistance = Math.max(transitionSpacer?.offsetHeight ?? viewHeight, 1);
+    const transition = Math.min(Math.max((scrollY - spacerTop) / transitionDistance, 0), 1);
     const easedTransition = transition * transition * (3 - (2 * transition));
     root.style.setProperty("--film-story-visible", visible.toFixed(3));
     root.classList.toggle("is-visible", visible > 0);
