@@ -309,7 +309,7 @@ html, body {
    SCROLL STORY SECTIONS
    ========================================================================== */
 .scroll-sequences {
-  position: relative; z-index: 15; padding-bottom: 0;
+  position: relative; z-index: 15; padding-bottom: 20vh;
 }
 
 /* ==========================================================================
@@ -433,7 +433,7 @@ html, body {
 
 .game-transition-spacer {
   position: relative;
-  height: 72vh;
+  height: 160vh;
   pointer-events: none;
 }
 

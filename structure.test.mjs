@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { access, readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { shouldAdvanceToGame } from "./modules/film-story.js";
 
 const root = dirname(fileURLToPath(import.meta.url));
 const html = await readFile(resolve(root, "index.html"), "utf8");
@@ -19,6 +20,10 @@ assert.match(game, /canvas-playbook:scenario-open/);
 assert.match(game, /scenarioTimer=setTimeout\(requestScenarioCanvas,1600\)/);
 assert.match(gameModule, /canvas-playbook:game-reset/);
 assert.match(scenarioModule, /onReturnToGame\(\)/);
+assert.equal(shouldAdvanceToGame({ sequence: 7, step: 2, direction: 1, locked: false }), true);
+assert.equal(shouldAdvanceToGame({ sequence: 7, step: 1, direction: 1, locked: false }), false);
+assert.equal(shouldAdvanceToGame({ sequence: 7, step: 2, direction: -1, locked: false }), false);
+assert.equal(shouldAdvanceToGame({ sequence: 7, step: 2, direction: 1, locked: true }), false);
 
 const localAssets = [...html.matchAll(/(?:src|href)="([^"?#]+)(?:[?#][^"]*)?"/g)]
   .map(([, path]) => path)

@@ -1,3 +1,7 @@
+export function shouldAdvanceToGame({ sequence, step, direction, locked }) {
+  return !locked && sequence === 7 && step === 2 && direction > 0;
+}
+
 export function initFilmStory() {
   const root = document.querySelector("#filmStory");
   const stage = root?.querySelector(".film-story-stage");
@@ -9,8 +13,20 @@ export function initFilmStory() {
   const title = root?.querySelector(".sequence-title");
   const bubble = root?.querySelector(".sequence-bubble");
   const transitionSpacer = root?.querySelector(".game-transition-spacer");
+  const game = document.querySelector("#sq08");
   let activeSequence = 0;
+  let activeStep = 0;
   let activeState = "";
+  let gameSnapLocked = false;
+  let touchStartY = 0;
+
+  function advanceToGame(direction) {
+    if (!shouldAdvanceToGame({ sequence: activeSequence, step: activeStep, direction, locked: gameSnapLocked })) return false;
+    gameSnapLocked = true;
+    game?.scrollIntoView({ behavior: "smooth", block: "start" });
+    window.setTimeout(() => { gameSnapLocked = false; }, 1100);
+    return true;
+  }
 
   function setTitle(segment) {
     const lines = segment.dataset.title.split("|");
@@ -49,8 +65,8 @@ export function initFilmStory() {
     const exit = Math.min(Math.max((storyBottom - scrollY) / (viewHeight * .08), 0), 1);
     const visible = Math.min(enter, exit);
     const spacerTop = transitionSpacer ? transitionSpacer.getBoundingClientRect().top + scrollY : storyBottom;
-    const transitionDistance = Math.max(transitionSpacer?.offsetHeight ?? viewHeight, 1);
-    const transition = Math.min(Math.max((scrollY - spacerTop) / transitionDistance, 0), 1);
+    const transitionStart = spacerTop + (transitionSpacer?.offsetHeight ?? 0) - (viewHeight / .7);
+    const transition = Math.min(Math.max((scrollY - transitionStart) / (viewHeight / .7), 0), 1);
     const easedTransition = transition * transition * (3 - (2 * transition));
     root.style.setProperty("--film-story-visible", visible.toFixed(3));
     root.classList.toggle("is-visible", visible > 0);
@@ -70,6 +86,8 @@ export function initFilmStory() {
     const activeWindow = windows.find((windowElement) => Number(windowElement.dataset.sequence) === sequence);
     if (!activeWindow) return;
     root.dataset.currentSequence = String(sequence);
+    root.dataset.currentStep = String(step);
+    activeStep = step;
     const windowCenter = activeWindow.offsetTop + (activeWindow.offsetHeight / 2);
     const follow = Math.min(Math.max((enter - .18) / .82, 0), 1);
     const easedFollow = follow * follow * (3 - (2 * follow));
@@ -93,6 +111,19 @@ export function initFilmStory() {
     }
     root.classList.toggle("highlight-ready", enter > .985 && exit > .55);
   }
+
+  window.addEventListener("wheel", (event) => {
+    if (Math.abs(event.deltaY) < 12 || !advanceToGame(Math.sign(event.deltaY))) return;
+    event.preventDefault();
+  }, { passive: false });
+  window.addEventListener("touchstart", (event) => {
+    touchStartY = event.changedTouches[0].clientY;
+  }, { passive: true });
+  window.addEventListener("touchend", (event) => {
+    const distanceY = touchStartY - event.changedTouches[0].clientY;
+    if (Math.abs(distanceY) < 40 || !advanceToGame(Math.sign(distanceY))) return;
+    event.preventDefault();
+  }, { passive: false });
 
   return { update };
 }
