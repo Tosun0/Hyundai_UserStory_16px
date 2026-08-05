@@ -9,6 +9,11 @@ export function initGameSequence({ onComplete }) {
     visible,
   }, "*");
 
+  const openScenario = () => {
+    syncVisibility(false);
+    onComplete();
+  };
+
   const observer = new IntersectionObserver((entries) => {
     const ratio = entries.reduce((highest, entry) => entry.isIntersecting ? Math.max(highest, entry.intersectionRatio) : highest, 0);
     const active = ratio >= .995;
@@ -22,6 +27,10 @@ export function initGameSequence({ onComplete }) {
   }, { threshold: [0, .01, .5, .9, .995, 1] });
 
   frame?.addEventListener("load", () => syncVisibility(root.classList.contains("is-active")));
-  skip?.addEventListener("click", onComplete);
+  window.addEventListener("message", (event) => {
+    if (event.source !== frame?.contentWindow || event.data?.type !== "canvas-playbook:scenario-open") return;
+    openScenario();
+  });
+  skip?.addEventListener("click", openScenario);
   observer.observe(root);
 }

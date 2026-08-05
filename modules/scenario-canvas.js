@@ -31,20 +31,24 @@ export function initScenarioCanvas() {
     render();
   }
 
-  function close() {
+  function close(returnToStart = true) {
     openState = false;
     root.classList.remove("active");
     root.setAttribute("aria-hidden", "true");
     document.documentElement.classList.remove("scenario-open");
-    document.body.classList.remove("game-active", "game-entering", "game-chrome-hidden");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (returnToStart) {
+      document.body.classList.remove("game-active", "game-entering", "game-chrome-hidden");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   }
 
   window.addEventListener("wheel", (event) => {
     if (!openState || wheelLocked || Math.abs(event.deltaY) < 12) return;
     event.preventDefault();
     wheelLocked = true;
-    move(Math.sign(event.deltaY));
+    const direction = Math.sign(event.deltaY);
+    if (direction < 0 && index === 0) close(false);
+    else move(direction);
     window.setTimeout(() => { wheelLocked = false; }, 500);
   }, { passive: false });
   window.addEventListener("touchstart", (event) => {
@@ -57,13 +61,15 @@ export function initScenarioCanvas() {
     const distanceX = touchStartX - event.changedTouches[0].clientX;
     const distanceY = touchStartY - event.changedTouches[0].clientY;
     if (Math.abs(distanceX) < 40 && Math.abs(distanceY) < 40) return;
-    move(Math.sign(Math.abs(distanceX) > Math.abs(distanceY) ? distanceX : distanceY));
+    const direction = Math.sign(Math.abs(distanceX) > Math.abs(distanceY) ? distanceX : distanceY);
+    if (direction < 0 && index === 0) close(false);
+    else move(direction);
   }, { passive: true });
   dots.forEach((dot) => dot.addEventListener("click", () => {
     index = Number(dot.dataset.index);
     render();
   }));
-  back?.addEventListener("click", close);
+  back?.addEventListener("click", () => close(true));
 
   return { open, isOpen: () => openState };
 }

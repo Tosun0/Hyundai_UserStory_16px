@@ -6,12 +6,15 @@ import { fileURLToPath } from "node:url";
 const root = dirname(fileURLToPath(import.meta.url));
 const html = await readFile(resolve(root, "index.html"), "utf8");
 const app = await readFile(resolve(root, "app.js"), "utf8");
+const game = await readFile(resolve(root, "Asset/Playbook/_Game/Game.html"), "utf8");
 
 assert.match(html, /id="sq01"/);
 assert.match(html, /id="filmStory"/);
 assert.match(html, /id="sq08"/);
 assert.match(html, /id="scenarioCanvas"/);
 assert.doesNotMatch(`${html}\n${app}`, /_(?:Comp|Img|Footage)\b/);
+assert.match(game, /canvas-playbook:scenario-open/);
+assert.match(game, /scenarioTimer=setTimeout\(requestScenarioCanvas,1600\)/);
 
 const localAssets = [...html.matchAll(/(?:src|href)="([^"?#]+)(?:[?#][^"]*)?"/g)]
   .map(([, path]) => path)

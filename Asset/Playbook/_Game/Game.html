@@ -259,6 +259,7 @@
   const hud=el('hud');
 
   let state = 'start';   // start, ready, running, roundresult, final
+  let scenarioTimer = 0;
   let mode = 'young';
   let round = 0;
   let roundPlan = [];
@@ -661,6 +662,8 @@
     }
     el('analysisOverall').textContent=overall;
     el('resultAnalysis').style.display='block';
+    clearTimeout(scenarioTimer);
+    scenarioTimer=setTimeout(requestScenarioCanvas,1600);
   }
 
   // ---- Events ----
@@ -673,6 +676,7 @@
   });
   function resetGame(){
     clearTimeout(toId);
+    clearTimeout(scenarioTimer);
     results={young:[],old:[]}; doneModes=new Set();
     sessionPlans={};
     roundPlan=[]; round=0; hazard=null; reacted=false;
@@ -707,6 +711,24 @@
       resetGame();
     }
   });
+
+  let scenarioNavigationLocked=false, scenarioTouchStartY=0;
+  function requestScenarioCanvas(){
+    if(scenarioNavigationLocked || !document.body.classList.contains('story-visible')) return;
+    if(state!=='start' && state!=='final') return;
+    scenarioNavigationLocked=true;
+    window.parent.postMessage({type:'canvas-playbook:scenario-open'},'*');
+    setTimeout(()=>{ scenarioNavigationLocked=false; },700);
+  }
+  window.addEventListener('wheel',event=>{
+    if(event.deltaY>32) requestScenarioCanvas();
+  },{passive:true});
+  window.addEventListener('touchstart',event=>{
+    scenarioTouchStartY=event.changedTouches[0].clientY;
+  },{passive:true});
+  window.addEventListener('touchend',event=>{
+    if(scenarioTouchStartY-event.changedTouches[0].clientY>50) requestScenarioCanvas();
+  },{passive:true});
 
   if(window.self===window.top) setStoryVisibility(true);
 
