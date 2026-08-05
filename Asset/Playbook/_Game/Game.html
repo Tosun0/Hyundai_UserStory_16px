@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>야간 주행 반응 속도 체험 — 20대 vs 60대</title>
+<style>
+  :root{
+    --bg:#354B3B; --panel:#141e19; --panel2:#203029; --line:rgba(255,255,255,.15);
+    --text:#f0f4f2; --muted:#9ba8a1; --accent:#16a385; --young:#16a385;
+    --old:#1d889b; --danger:#e65245; --ok:#16a385;
+    --font:"Pretendard",-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{background:var(--bg);color:var(--text);font-family:var(--font);
+    display:flex;align-items:safe center;justify-content:center;min-height:100vh;padding:16px;
+    position:relative;isolation:isolate;overflow-x:hidden}
+  .wrap{position:relative;z-index:1;width:100%;max-width:900px}
+  h1{font-size:22px;font-weight:600;margin-bottom:4px;text-align:center}
+  .game-title{font-size:44px;font-weight:700;line-height:1.3;letter-spacing:-.035em}
+  .game-title-highlight{position:relative;display:inline-block;isolation:isolate;padding:0 .12em}
+  .game-title-highlight::before{content:"";position:absolute;z-index:-1;inset:.08em 0 .02em;
+    border-radius:3px;background:linear-gradient(100deg,#139d62 0%,#1d889b 100%);
+    transform:scaleX(0);transform-origin:left center}
+  body.story-visible .game-title-highlight::before{
+    animation:game-title-highlight-reveal .9s cubic-bezier(.7,0,.3,1) .12s forwards}
+  @keyframes game-title-highlight-reveal{
+    from{transform:scaleX(0)}
+    to{transform:scaleX(1)}
+  }
+  .sub{height:67.2px;color:var(--muted);font-size:21px;text-align:center;margin-bottom:27px;line-height:1.6}
+  .sub .kbd{font-size:18px!important;padding:3px 12px!important}
+  .stage{position:relative;left:50%;width:min(162.5%,calc(100vw - 32px));aspect-ratio:16/10;
+    transform:translateX(-50%);background:#05070b;
+    border:1px solid var(--line);border-radius:14px;overflow:hidden;
+    box-shadow:0 0 56px 10px rgba(255,255,255,.20)}
+  .sub,
+  .overlay p,
+  .mode-card p,
+  .footnote{word-break:keep-all;overflow-wrap:normal}
+  canvas{display:block;width:100%;height:100%}
+  .overlay{position:absolute;inset:0;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;text-align:center;padding:36px;
+    background:rgba(12,20,16,.84);gap:21px}
+  .overlay.hidden{display:none}
+  .badge{display:inline-block;font-size:19.5px;padding:6px 18px;border-radius:30px;
+    border:1px solid var(--line);color:var(--muted)}
+  .mode-row{display:flex;gap:21px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+  .mode-card{background:var(--panel);border:1px solid var(--line);border-radius:18px;
+    padding:27px 30px;width:330px;cursor:default;transition:none;text-align:left}
+  .mode-card:hover{border-color:var(--line);transform:none}
+  .mode-card h3{font-size:25.5px;margin-bottom:9px}
+  .mode-card.young h3{color:var(--young)}
+  .mode-card.old h3{color:var(--old)}
+  .mode-card p{color:var(--muted);font-size:19.5px;line-height:1.55}
+  .big{font-size:22.5px;font-weight:600}
+  .hint{color:var(--muted);font-size:19.5px;line-height:1.6;max-width:780px}
+  button{font-family:var(--font);cursor:pointer}
+  .btn{background:linear-gradient(100deg,#139d62 0%,#1d889b 100%);color:#fff;
+    border:none;padding:16.5px 33px;border-radius:15px;font-size:22.5px;font-weight:600;
+    box-shadow:0 6px 22px rgba(22,163,133,.24)}
+  .btn.ghost{background:rgba(255,255,255,.09);color:var(--text);border:1px solid rgba(255,255,255,.16);box-shadow:none}
+  .btn:hover{filter:brightness(1.08);box-shadow:0 8px 26px rgba(22,163,133,.34)}
+  .btn.ghost:hover{background:rgba(255,255,255,.17);box-shadow:none}
+  .hud{position:absolute;top:18px;left:18px;display:flex;
+    align-items:flex-start;pointer-events:none;font-size:19.5px}
+  .hud .tag{background:rgba(20,30,25,.84);border:1px solid var(--line);
+    border-radius:12px;padding:7.5px 15px}
+  .kbd{display:inline-block;background:var(--panel2);border:1px solid var(--line);
+    border-bottom-width:4.5px;border-radius:9px;padding:4.5px 18px;font-weight:600;font-size:22.5px}
+  .res-grid{display:grid;grid-template-columns:1fr 1fr;gap:21px;margin-top:24px}
+  #ovFinal #compare{width:100%;max-width:780px}
+  #ovFinal .res-grid{margin-top:0}
+  #ovFinal{background:rgba(12,20,16,.66);gap:18px}
+  #ovFinal #compare{max-width:1092px}
+  #ovFinal .controls{margin-top:0}
+  .result-analysis{
+    width:100%;max-width:1092px;padding:22px 28px;border:1px solid rgba(255,255,255,.12);
+    border-radius:20px;background:rgba(20,30,25,.84);text-align:left;
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)
+  }
+  .result-analysis p{font-size:22px;line-height:1.55;color:var(--muted)}
+  .result-analysis p+p{margin-top:5px}
+  .result-analysis b{color:var(--text)}
+  .result-analysis .trend-danger{color:var(--danger)}
+  .result-analysis .overall{margin-top:10px;color:var(--text);font-weight:600}
+  .res-card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px}
+  .res-card h3{font-size:22.5px;margin-bottom:18px;display:flex;align-items:center;gap:12px}
+  .dot{width:15px;height:15px;border-radius:50%;display:inline-block}
+  .dot.young{background:var(--young)}.dot.old{background:var(--old)}
+  .metric{display:flex;justify-content:space-between;padding:10.5px 0;
+    border-bottom:1px solid var(--line);font-size:21px}
+  .metric:last-child{border-bottom:none}
+  .metric .v{font-weight:600;font-variant-numeric:tabular-nums}
+  .v.hit{color:var(--danger)}.v.safe{color:var(--ok)}
+  #co-hit{color:var(--old)}
+  .controls{display:flex;gap:18px;justify-content:center;margin-top:27px;flex-wrap:wrap}
+  .flash{position:absolute;inset:0;pointer-events:none;opacity:0}
+  .stage.result-danger::after{
+    content:"";position:absolute;z-index:30;inset:0;pointer-events:none;border-radius:inherit;
+    box-shadow:inset 0 0 34px 8px rgba(230,82,69,.88),inset 0 0 90px 22px rgba(230,82,69,.38);
+    animation:danger-inner-shadow-in .7s ease-out both
+  }
+  @keyframes danger-inner-shadow-in{
+    from{opacity:0}
+    to{opacity:.7}
+  }
+  .footnote{color:var(--muted);font-size:18px;text-align:center;margin-top:24px;line-height:1.6}
+  .game-title{transform:translateY(40px)}
+  .wrap > .sub{transform:none}
+  .stage .badge{font-size:17.75px;padding:7.8px 23.4px}
+  .stage #ovStart .badge,
+  .stage #ovReady .badge,
+  .stage #ovFinal .badge{font-size:21.3px;padding:9.36px 28.08px}
+  .stage #ovStart .big{line-height:1.56}
+  .stage .big{font-size:20.5px}
+  .stage .hint,
+  .stage .mode-card p,
+  .stage .result-analysis p{font-size:17.75px}
+  .stage .mode-card h3,
+  .stage .res-card h3{font-size:23.2px}
+  .stage .metric{font-size:17.75px}
+  .stage .hud{font-size:17.75px}
+  .stage .btn{font-size:23.4px;padding:17.16px 34.32px;border-radius:15.6px}
+  .stage .kbd{font-size:15.6px!important;padding:2.6px 10.4px!important}
+  .mouse-kbd{
+    position:relative;display:inline-block;width:25px;height:31px;margin:0 3px;
+    border:1.5px solid var(--line);border-bottom-width:4px;border-radius:11px;
+    background:var(--panel2);vertical-align:-9px;overflow:hidden
+  }
+  .mouse-kbd::before{
+    content:"";position:absolute;top:0;left:50%;width:1px;height:14px;
+    background:var(--line);transform:translateX(-50%)
+  }
+  .mouse-kbd::after{
+    content:"";position:absolute;top:0;left:0;width:50%;height:14px;
+    background:#fff;border-radius:9px 0 2px 0
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 class="game-title">야간 주행 <span class="game-title-highlight">반응 속도</span> 체험</h1>
+  <p class="sub" aria-hidden="true"></p>
+
+  <div class="stage" id="stage">
+    <canvas id="cv"></canvas>
+    <div class="flash" id="flash"></div>
+    <div class="hud" id="hud" style="display:none">
+      <span class="tag" id="hudMode">모드</span>
+    </div>
+
+    <!-- START -->
+    <div class="overlay" id="ovStart">
+      <span class="badge">체험 시작</span>
+      <p class="big">같은 상황을 <span style="color:var(--young)">20대의 눈</span>과 <span style="color:var(--old)">60대의 눈</span>으로 각각 겪어보세요.<br>
+      어두운 갓길·숲에서 고라니가 튀어나오면 <span class="kbd">Space</span> 또는 <span class="mouse-kbd" role="img" aria-label="마우스 왼쪽 클릭"></span>로 브레이크를 밟습니다.</p>
+      <div class="mode-row">
+        <div class="mode-card young" style="cursor:default">
+          <h3>1단계 · 20대의 눈</h3>
+          <p>넓은 시야 · 밝은 화면 · 또렷한 대비. 고라니가 빨리 눈에 들어옵니다.</p>
+        </div>
+        <div class="mode-card old" style="cursor:default">
+          <h3>2단계 · 60대의 눈</h3>
+          <p>크게 좁아진 시야 · 훨씬 어두운 화면 · 헤드라이트 눈부심 · 낮은 대비. 위협이 늦게 보입니다.</p>
+        </div>
+      </div>
+      <p class="hint">각 단계는 3라운드입니다. 고라니의 <b>등장 방향·등장 시점·나오지 않는 라운드</b>는 플레이할 때마다 달라집니다. 성급하게 누르면 오히려 감점(오경보)이므로 실제로 <b>보였을 때</b> 누르세요.</p>
+      <button class="btn" id="btnStart">20대의 눈으로 시작</button>
+    </div>
+
+    <!-- READY (per round) -->
+    <div class="overlay hidden" id="ovReady">
+      <span class="badge" id="readyBadge">라운드</span>
+      <p class="big" id="readyTitle">전방을 주시하세요! 👀</p>
+      <p class="hint">화면 중앙의 계기판을 보며 정속 주행 중입니다.<br>고라니가 나타나면 즉시 <span class="kbd" style="font-size:12px;padding:2px 8px">Space</span></p>
+      <button class="btn" id="btnGo">출발</button>
+    </div>
+
+    <!-- ROUND RESULT -->
+    <div class="overlay hidden" id="ovRound">
+      <p class="big" id="rrTitle">결과</p>
+      <p class="hint" id="rrBody"></p>
+      <button class="btn" id="btnNext">다음</button>
+    </div>
+
+    <!-- FINAL -->
+    <div class="overlay hidden" id="ovFinal">
+      <span class="badge" id="finalBadge">완료</span>
+      <p class="big" id="finalTitle"></p>
+      <p class="hint" id="finalHint"></p>
+      <div id="compare" style="display:none">
+        <div class="res-grid">
+          <div class="res-card">
+            <h3><span class="dot young"></span>20대의 눈</h3>
+            <div class="metric"><span>평균 반응 속도</span><span class="v" id="cy-rt">–</span></div>
+            <div class="metric"><span>평균 제동 시작거리</span><span class="v" id="cy-dist">–</span></div>
+            <div class="metric"><span>충돌 / 회피</span><span class="v" id="cy-hit">–</span></div>
+            <div class="metric"><span>오경보(성급한 제동)</span><span class="v" id="cy-fa">–</span></div>
+          </div>
+          <div class="res-card">
+            <h3><span class="dot old"></span>60대의 눈</h3>
+            <div class="metric"><span>평균 반응 속도</span><span class="v" id="co-rt">–</span></div>
+            <div class="metric"><span>평균 제동 시작거리</span><span class="v" id="co-dist">–</span></div>
+            <div class="metric"><span>충돌 / 회피</span><span class="v" id="co-hit">–</span></div>
+            <div class="metric"><span>오경보(성급한 제동)</span><span class="v" id="co-fa">–</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="result-analysis" id="resultAnalysis" style="display:none">
+        <p id="analysisReaction"></p>
+        <p id="analysisDistance"></p>
+        <p id="analysisSafety"></p>
+        <p class="overall" id="analysisOverall"></p>
+      </div>
+      <div class="controls">
+        <button class="btn" id="btnOther">반대쪽 눈으로 체험</button>
+        <button class="btn ghost" id="btnRestart">처음으로</button>
+      </div>
+    </div>
+  </div>
+
+  <p class="footnote">이 체험은 반사 신경 자체를 측정하는 도구가 아니라, <b>같은 야간 상황이 나이 든 눈에는 얼마나 다르게 인지되는지</b>를 보여주는 공감 시뮬레이션입니다. 속도 50km/h, 사고 여유 거리 20m 가정.</p>
+</div>
+
+<script>
+(function(){
+  const cv = document.getElementById('cv');
+  const ctx = cv.getContext('2d');
+  const hazardLayer = document.createElement('canvas');
+  const hazardCtx = hazardLayer.getContext('2d');
+  const stage = document.getElementById('stage');
+  const flash = document.getElementById('flash');
+  let W=800, H=500, DPR=1;
+
+  function resize(){
+    const r = stage.getBoundingClientRect();
+    DPR = Math.min(window.devicePixelRatio||1, 2);
+    W = r.width; H = r.height;
+    cv.width = W*DPR; cv.height = H*DPR;
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+    hazardLayer.width = Math.max(1,Math.ceil(W));
+    hazardLayer.height = Math.max(1,Math.ceil(H));
+  }
+  window.addEventListener('resize', resize);
+
+  // ---- Physics / config ----
+  const SPEED_KMH = 50;
+  const V = SPEED_KMH/3.6;            // m/s = 13.9
+  const GAP = 20;                     // m available before hazard
+  const DECEL = 7;                    // m/s^2 braking
+  const BRAKE_DIST = (V*V)/(2*DECEL); // ~13.8 m fixed once braking
+
+  const ROUNDS = 3;
+
+  const el = id => document.getElementById(id);
+  const ovStart=el('ovStart'), ovReady=el('ovReady'), ovRound=el('ovRound'), ovFinal=el('ovFinal');
+  const hud=el('hud');
+
+  let state = 'start';   // start, ready, running, roundresult, final
+  let mode = 'young';
+  let round = 0;
+  let roundPlan = [];
+  let results = { young:[], old:[] };
+  let doneModes = new Set();
+  let sessionPlans = {};
+  const previousPlanSignatures = { young:null, old:null };
+
+  // per-round runtime
+  let hazard=null, appearAt=0, reacted=false, startT=0, rafId=null, isCatch=false;
+
+  function show(ov){ [ovStart,ovReady,ovRound,ovFinal].forEach(o=>o.classList.add('hidden')); if(ov) ov.classList.remove('hidden'); }
+
+  // ---- Scene drawing ----
+  function drawScene(now){
+    const old = mode==='old';
+    ctx.clearRect(0,0,W,H);
+    // sky/road base
+    ctx.fillStyle = old ? '#010204' : '#0a0f18';
+    ctx.fillRect(0,0,W,H);
+
+    const horizon = H*0.42;
+    const roadX = (t,frac)=> W*0.5 + (frac)*(W*0.40)*(0.15+t*t*0.95);
+    // road (perspective trapezoid)
+    ctx.fillStyle = old ? '#06070a' : '#141922';
+    ctx.beginPath();
+    ctx.moveTo(roadX(0,-1),horizon); ctx.lineTo(roadX(0,1),horizon);
+    ctx.lineTo(roadX(1,1),H); ctx.lineTo(roadX(1,-1),H); ctx.closePath(); ctx.fill();
+
+    // scrolling road markers -> sense of forward motion
+    const scroll = (now*0.00035)%1;      // 0..1 loops, dashes flow toward viewer
+    const persp = t => horizon+(H-horizon)*t*t;
+    // center dashed lane line
+    const seg=0.05, dashN=9;
+    ctx.strokeStyle = old ? 'rgba(190,180,130,.30)' : 'rgba(235,225,155,.8)';
+    for(let i=0;i<dashN;i++){
+      let t=((i/dashN)+scroll)%1;
+      const y0=persp(t), y1=persp(Math.min(1,t+seg));
+      ctx.lineWidth=Math.max(1,1+t*t*13);
+      ctx.beginPath(); ctx.moveTo(W*0.5, y0); ctx.lineTo(W*0.5, y1); ctx.stroke();
+    }
+    // roadside reflector posts (both edges) scrolling too
+    for(let i=0;i<8;i++){
+      let t=((i/8)+scroll)%1;
+      if(t<0.04) continue;
+      const y=persp(t), r=Math.max(1.2,1+t*t*5);
+      for(const s of [-1,1]){
+        const x=roadX(t,s);
+        ctx.fillStyle = old ? 'rgba(200,120,90,'+(0.15+t*0.35)+')' : 'rgba(255,150,110,'+(0.35+t*0.55)+')';
+        ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill();
+      }
+    }
+
+    // hazard: a water deer (고라니) darting onto the road from the shoulder
+    if(hazard && now>=appearAt){
+      const t = Math.min(1,(now-appearAt)/(hazard.duration||650)); // dart-in progress
+      const fromLeft = hazard.side<0;
+      const targetX = fromLeft ? W*0.40 : W*0.60;
+      const startX = fromLeft ? W*0.02 : W*0.98;
+      const x = startX + (targetX-startX)*t;
+      const y = H*0.62;
+      const s = (old?30:38) * (0.85+0.15*t);
+      const dir = fromLeft ? 1 : -1;                 // facing direction
+      // Build the older-driver deer fully opaque on a separate layer, then
+      // composite that completed silhouette once at 50% to avoid dark overlaps.
+      const deerCtx = old ? hazardCtx : ctx;
+      if(old) deerCtx.clearRect(0,0,hazardLayer.width,hazardLayer.height);
+      const body = old ? 'rgb(120,110,96)' : 'rgba(198,170,138,'+(0.9+0.1*t)+')';
+      deerCtx.save();
+      deerCtx.translate(x,y);
+      deerCtx.scale(dir,1);
+      deerCtx.fillStyle=body;
+      // torso
+      deerCtx.beginPath(); deerCtx.ellipse(0,-s*0.15,s*0.55,s*0.30,0,0,7); deerCtx.fill();
+      // hindquarter
+      deerCtx.beginPath(); deerCtx.ellipse(-s*0.42,-s*0.18,s*0.26,s*0.28,0,0,7); deerCtx.fill();
+      // neck + head (raised, alert)
+      deerCtx.beginPath();
+      deerCtx.moveTo(s*0.35,-s*0.30);
+      deerCtx.lineTo(s*0.58,-s*0.85);
+      deerCtx.lineTo(s*0.74,-s*0.80);
+      deerCtx.lineTo(s*0.52,-s*0.18);
+      deerCtx.closePath(); deerCtx.fill();
+      // head
+      deerCtx.beginPath(); deerCtx.ellipse(s*0.72,-s*0.88,s*0.17,s*0.12,-0.3,0,7); deerCtx.fill();
+      // ears
+      deerCtx.beginPath(); deerCtx.ellipse(s*0.66,-s*1.02,s*0.05,s*0.11,-0.2,0,7); deerCtx.fill();
+      deerCtx.beginPath(); deerCtx.ellipse(s*0.78,-s*1.02,s*0.05,s*0.11,0.1,0,7); deerCtx.fill();
+      // legs
+      deerCtx.strokeStyle=body; deerCtx.lineWidth=Math.max(2,s*0.09); deerCtx.lineCap='round';
+      const legY=-s*0.02;
+      [[-0.40,-0.02],[-0.18,0.05],[0.30,-0.02],[0.48,0.05]].forEach(([lx,sw])=>{
+        deerCtx.beginPath(); deerCtx.moveTo(s*lx, legY); deerCtx.lineTo(s*(lx+sw), s*0.55); deerCtx.stroke();
+      });
+      // eye-shine (headlights reflecting in the deer's eyes)
+      const glow = old?'rgba(150,255,210,'+(0.5+0.4*t)+')':'rgba(180,255,220,'+(0.7+0.3*t)+')';
+      deerCtx.fillStyle=glow;
+      deerCtx.beginPath(); deerCtx.arc(s*0.78,-s*0.90,Math.max(1.5,s*0.055),0,7); deerCtx.fill();
+      deerCtx.restore();
+      if(old){
+        ctx.save();
+        ctx.globalAlpha=.5;
+        ctx.filter='blur(1px)';
+        ctx.drawImage(hazardLayer,0,0,W,H);
+        ctx.restore();
+      }
+    }
+
+    // vignette (narrowed field for old)
+    if(old){
+      const vg = ctx.createRadialGradient(W*0.5,H*0.56,H*0.12,W*0.5,H*0.56,H*0.60);
+      vg.addColorStop(0,'rgba(0,0,0,0)');
+      vg.addColorStop(0.6,'rgba(0,0,0,0.35)');
+      vg.addColorStop(1,'rgba(0,0,0,0.68)');
+      ctx.fillStyle=vg; ctx.fillRect(0,0,W,H);
+      // extra overall dimming
+      ctx.fillStyle='rgba(0,0,0,0.12)'; ctx.fillRect(0,0,W,H);
+    } else {
+      const vg = ctx.createRadialGradient(W*0.5,H*0.55,H*0.4,W*0.5,H*0.55,H*0.95);
+      vg.addColorStop(0,'rgba(0,0,0,0)');
+      vg.addColorStop(1,'rgba(0,0,0,0.35)');
+      ctx.fillStyle=vg; ctx.fillRect(0,0,W,H);
+    }
+
+    // Keep the dashboard guidance equally legible in both vision modes.
+    // It is drawn after the age-related filters so the filter only affects
+    // the road scene and hazards, not this fixed driving reference.
+    ctx.fillStyle='rgba(240,244,242,.88)';
+    ctx.font='600 22.5px "Pretendard", sans-serif'; ctx.textAlign='center';
+    ctx.fillText(SPEED_KMH+' km/h', W*0.5, H*0.90);
+    ctx.fillStyle='rgba(240,244,242,.58)';
+    ctx.font='16.5px "Pretendard", sans-serif';
+    ctx.fillText('전방 주시', W*0.5, H*0.90+24);
+  }
+
+  function loop(){
+    const now = performance.now();
+    drawScene(now);
+    rafId = requestAnimationFrame(loop);
+  }
+
+  // ---- Round flow ----
+  function planSignature(plan){
+    return plan.map(item=>item.catch?'none':(item.side<0?'left':'right')).join('|');
+  }
+
+  function createRoundPlan(modeName){
+    const otherMode = modeName==='young'?'old':'young';
+    const otherCatchRound = sessionPlans[otherMode]?.findIndex(item=>item.catch);
+    const candidates = [];
+
+    for(let catchRound=0; catchRound<ROUNDS; catchRound++){
+      if(otherCatchRound>=0 && catchRound===otherCatchRound) continue;
+      for(const sides of [[-1,1],[1,-1]]){
+        let sideIndex = 0;
+        const plan = Array.from({length:ROUNDS},(_,index)=>{
+          if(index===catchRound) return {catch:true,side:0,delay:null,duration:null};
+          return {
+            catch:false,
+            side:sides[sideIndex++],
+            delay:1400 + Math.random()*3000,
+            duration:520 + Math.random()*300
+          };
+        });
+        if(planSignature(plan)!==previousPlanSignatures[modeName]) candidates.push(plan);
+      }
+    }
+
+    const pool = candidates.length ? candidates : createFallbackPlans();
+    const selected = pool[Math.floor(Math.random()*pool.length)];
+    previousPlanSignatures[modeName] = planSignature(selected);
+    sessionPlans[modeName] = selected;
+    console.groupCollapsed(`[미니게임 랜덤 계획] ${modeName==='young'?'20대':'60대'} 시야`);
+    console.table(selected.map((item,index)=>({
+      round:index+1,
+      result:item.catch?'고라니 없음':item.side<0?'왼쪽에서 등장':'오른쪽에서 등장',
+      delay:item.delay==null?'-':`${Math.round(item.delay)}ms`,
+      movement:item.duration==null?'-':`${Math.round(item.duration)}ms`
+    })));
+    console.groupEnd();
+    return selected;
+  }
+
+  function createFallbackPlans(){
+    const catchRound = Math.floor(Math.random()*ROUNDS);
+    const sides = Math.random()<0.5 ? [-1,1] : [1,-1];
+    let sideIndex = 0;
+    return [Array.from({length:ROUNDS},(_,index)=>{
+      if(index===catchRound) return {catch:true,side:0,delay:null,duration:null};
+      return {
+        catch:false,
+        side:sides[sideIndex++],
+        delay:1400 + Math.random()*3000,
+        duration:520 + Math.random()*300
+      };
+    })];
+  }
+
+  function beginMode(m){
+    mode=m; round=0; roundPlan=createRoundPlan(m); results[m]=[];
+    hud.style.display='flex';
+    el('hudMode').textContent = m==='young'?'20대의 눈':'60대의 눈';
+    startReady();
+  }
+
+  function startReady(){
+    state='ready';
+    el('hudMode').textContent = `${mode==='young'?'20대의 눈':'60대의 눈'} · 라운드 ${round+1}/${ROUNDS}`;
+    el('readyBadge').textContent = `${mode==='young'?'20대':'60대'} · 라운드 ${round+1}/${ROUNDS}`;
+    hazard=null;
+    // static preview frame
+    drawScene(performance.now());
+    show(ovReady);
+  }
+
+  function startRun(){
+    state='running'; show(null);
+    reacted=false;
+    const currentRound = roundPlan[round];
+    isCatch = currentRound.catch;
+    startT = performance.now();
+    if(isCatch){
+      hazard=null; appearAt=Infinity;
+    } else {
+      appearAt = startT + currentRound.delay;
+      hazard = { side: currentRound.side, duration:currentRound.duration };
+    }
+    scheduleTimeout();
+  }
+
+  let toId=null;
+  function scheduleTimeout(){
+    clearTimeout(toId);
+    // give up window: 2.2s after appear (or 5s for catch)
+    const now=performance.now();
+    if(isCatch){
+      toId=setTimeout(()=>finishRound({reaction:null,catch:true,pressed:false}), 4500);
+    } else {
+      const wait = (appearAt-now) + 2200;
+      toId=setTimeout(()=>{ if(!reacted) finishRound({reaction:null,catch:false,pressed:false}); }, wait);
+    }
+  }
+
+  function onPress(){
+    if(state==='running'){
+      const now=performance.now();
+      clearTimeout(toId);
+      if(isCatch){
+        // false alarm
+        flashScreen('#e65245');
+        finishRound({reaction:null,catch:true,pressed:true});
+        return;
+      }
+      if(now < appearAt){
+        // pressed before hazard appeared -> false alarm
+        flashScreen('#e65245');
+        finishRound({reaction:null,catch:false,pressed:true,early:true});
+        return;
+      }
+      reacted=true;
+      const rt = (now - appearAt)/1000; // seconds
+      flashScreen('#16a385');
+      finishRound({reaction:rt,catch:false,pressed:true});
+    } else if(state==='ready'){
+      startRun();
+    } else if(state==='roundresult'){
+      nextRound();
+    }
+  }
+
+  function flashScreen(color){
+    flash.style.background=color; flash.style.transition='none'; flash.style.opacity='0.35';
+    requestAnimationFrame(()=>{ flash.style.transition='opacity .5s'; flash.style.opacity='0'; });
+  }
+
+  function finishRound(r){
+    if(state!=='running') return;
+    state='roundresult';
+    // compute
+    let rec = { catch:r.catch, pressed:r.pressed, early:!!r.early, reaction:r.reaction };
+    let title, body;
+    if(r.catch){
+      if(r.pressed){ title='오경보! 🚫'; body='고라니가 없었는데 브레이크를 밟았어요.<br>뒤차와 추돌할 위험이 있습니다.<br>실제로 보였을 때만 반응하세요.'; }
+      else { title='잘 참았습니다. 👍'; body='이 라운드는 고라니가 없었습니다.<br>성급하게 누르지 않은 게 정답이에요.'; }
+    } else if(r.early){
+      title='너무 빨랐어요!'; body='고라니가 나타나기도 전에 눌렀습니다.<br>예측이 아니라 반응이 필요합니다.';
+    } else if(r.reaction==null){
+      title='미반응 — 충돌! 💥'; body='제때 브레이크를 밟지 못했습니다.';
+      rec.dist = GAP+99; rec.hit=true;
+    } else {
+      const reactDist = V*r.reaction;
+      const total = reactDist + BRAKE_DIST;
+      rec.dist = reactDist; rec.total = total; rec.hit = total>GAP;
+      const ms = Math.round(r.reaction*1000);
+      title = rec.hit ? `충돌! 💥  (반응 ${ms}ms)` : `회피 성공! 👍  (반응 ${ms}ms)`;
+      body = `반응하는 사이 <b>${reactDist.toFixed(1)}m</b> 전진했고, 제동 거리 ${BRAKE_DIST.toFixed(1)}m를 더하면 총 <b>${total.toFixed(1)}m</b>입니다.<br>` +
+             (rec.hit ? `여유 거리 ${GAP}m를 넘겨 고라니와 부딪혔습니다.` : `여유 거리 ${GAP}m 안에 멈춰 사고를 피했습니다.`);
+    }
+    results[mode].push(rec);
+    stage.classList.toggle('result-danger', Boolean(
+      (r.catch && r.pressed) || r.early || (!r.catch && rec.hit)
+    ));
+    el('rrTitle').innerHTML=title; el('rrBody').innerHTML=body;
+    show(ovRound);
+  }
+
+  function nextRound(){
+    stage.classList.remove('result-danger');
+    round++;
+    if(round>=ROUNDS){ finishMode(); }
+    else startReady();
+  }
+
+  function finishMode(){
+    doneModes.add(mode);
+    state='final';
+    const rs=results[mode];
+    const valid=rs.filter(r=>r.reaction!=null);
+    const avgRt = valid.length? valid.reduce((s,r)=>s+r.reaction,0)/valid.length : null;
+    const hits = rs.filter(r=>!r.catch && r.hit).length;
+    const hazards = rs.filter(r=>!r.catch).length;
+    hazard=null;
+    el('finalBadge').textContent = `${mode==='young'?'20대':'60대'} 완료`;
+    el('finalTitle').innerHTML = avgRt!=null
+      ? `평균 반응 ${Math.round(avgRt*1000)}ms · ${hazards-hits}/${hazards} 회피`
+      : `측정 완료!`;
+    el('finalHint').textContent = doneModes.size<2
+      ? '이어서 60대의 눈으로 같은 상황을 체험하면 나란히 비교해 드립니다.'
+      : '아래에서 두 결과를 비교해보세요.';
+    el('btnOther').textContent = '60대의 눈으로 이어서';
+    el('btnOther').style.display = doneModes.size<2 ? '' : 'none';
+    hud.style.display='none';
+    show(ovFinal);
+    if(doneModes.size>=2) renderCompare();
+  }
+
+  function summarize(m){
+    const rs=results[m]; if(!rs.length) return null;
+    const valid=rs.filter(r=>r.reaction!=null);
+    const avgRt = valid.length? valid.reduce((s,r)=>s+r.reaction,0)/valid.length : null;
+    const dvals = rs.filter(r=>!r.catch && r.reaction!=null).map(r=>r.dist);
+    const avgD = dvals.length? dvals.reduce((a,b)=>a+b,0)/dvals.length : null;
+    const hazardRounds=rs.filter(r=>!r.catch);
+    const safetyValues=hazardRounds.map(r=>{
+      if(r.total==null) return 0;
+      return Math.max(0,GAP-r.total);
+    });
+    const avgSafety=safetyValues.length?safetyValues.reduce((a,b)=>a+b,0)/safetyValues.length:null;
+    const hazards=rs.filter(r=>!r.catch).length;
+    const hits=rs.filter(r=>!r.catch && r.hit).length;
+    const fa=rs.filter(r=>r.catch && r.pressed).length + rs.filter(r=>r.early).length;
+    return {avgRt,avgD,avgSafety,hazards,hits,fa};
+  }
+
+  function renderCompare(){
+    const y=summarize('young'), o=summarize('old');
+    el('compare').style.display='block';
+    const fmt=(s,pre)=>{
+      el(pre+'-rt').textContent = s.avgRt!=null? Math.round(s.avgRt*1000)+' ms':'–';
+      el(pre+'-dist').textContent = s.avgD!=null? s.avgD.toFixed(1)+' m':'–';
+      const hh=el(pre+'-hit');
+      hh.textContent = `${s.hazards-s.hits} 회피 / ${s.hits} 충돌`;
+      hh.className='v '+(s.hits>0?'hit':'safe');
+      el(pre+'-fa').textContent = s.fa+' 회';
+    };
+    fmt(y,'cy'); fmt(o,'co');
+    const reactionDiff = y.avgRt!=null && o.avgRt!=null ? (o.avgRt-y.avgRt)*1000 : null;
+    const distanceDiff = y.avgD!=null && o.avgD!=null ? o.avgD-y.avgD : null;
+    const youngSafety = y.avgSafety!=null ? y.avgSafety/GAP*100 : null;
+    const oldSafety = o.avgSafety!=null ? o.avgSafety/GAP*100 : null;
+    const safetyChange = youngSafety!=null && oldSafety!=null
+      ? (youngSafety>0 ? (youngSafety-oldSafety)/youngSafety*100 : oldSafety-youngSafety)
+      : null;
+
+    el('analysisReaction').innerHTML = reactionDiff==null
+      ? '평균 반응 속도를 비교할 수 있는 기록이 부족합니다.'
+      : reactionDiff>=0
+        ? `60대 시야의 평균 반응이 <b>${Math.round(reactionDiff)}ms <span class="trend-danger">느려졌습니다.</span></b>`
+        : `60대 시야의 평균 반응이 <b>${Math.abs(Math.round(reactionDiff))}ms 빨라졌습니다.</b>`;
+    el('analysisDistance').innerHTML = distanceDiff==null
+      ? '제동 시작거리 차이를 계산할 수 있는 기록이 부족합니다.'
+      : distanceDiff>=0
+        ? `브레이크를 밟기 전 이동거리가 평균 <b>${distanceDiff.toFixed(1)}m <span class="trend-danger">늘어났습니다.</span></b>`
+        : `브레이크를 밟기 전 이동거리가 평균 <b>${Math.abs(distanceDiff).toFixed(1)}m 줄어들었습니다.</b>`;
+    el('analysisSafety').innerHTML = safetyChange==null
+      ? '안전 여유 변화를 계산할 수 있는 기록이 부족합니다.'
+      : safetyChange>=0
+        ? `충돌을 피할 수 있는 평균 안전 여유가 <b>${Math.round(safetyChange)}% <span class="trend-danger">감소했습니다.</span></b>`
+        : `충돌을 피할 수 있는 평균 안전 여유가 <b>${Math.abs(Math.round(safetyChange))}% 증가했습니다.</b>`;
+
+    const extraHits=o.hits-y.hits;
+    const extraFalseAlarms=o.fa-y.fa;
+    let overall='60대 시야에서는 어둡고 좁아진 시야로 위험 요소를 인지하는 시점이 늦어질 수 있습니다.';
+    if(extraHits>0){
+      overall=`총평: 늦어진 위험 인지가 20대 시야보다 ${extraHits}회의 추가 충돌로 이어졌습니다. 야간에는 속도를 낮추고 더 긴 안전거리를 확보해야 합니다.`;
+    }else if(extraFalseAlarms>0){
+      overall=`총평: 충돌 횟수 차이는 크지 않았지만 60대 시야에서 오경보가 ${extraFalseAlarms}회 더 발생했습니다. 시야 확보와 충분한 판단 시간이 필요합니다.`;
+    }else if(reactionDiff!=null && reactionDiff>0){
+      overall='총평: 충돌은 피했지만 60대 시야에서 반응이 늦어졌습니다. 실제 도로에서는 이 작은 시간 차이가 제동 여유를 크게 줄일 수 있습니다.';
+    }
+    el('analysisOverall').textContent=overall;
+    el('resultAnalysis').style.display='block';
+  }
+
+  // ---- Events ----
+  el('btnStart').addEventListener('click',()=>beginMode('young'));
+  el('btnGo').addEventListener('click',startRun);
+  el('btnNext').addEventListener('click',nextRound);
+  el('btnOther').addEventListener('click',()=>{
+    const other = doneModes.has('young')?'old':'young';
+    show(null); beginMode(other);
+  });
+  function resetGame(){
+    clearTimeout(toId);
+    results={young:[],old:[]}; doneModes=new Set();
+    sessionPlans={};
+    roundPlan=[]; round=0; hazard=null; reacted=false;
+    el('compare').style.display='none'; hud.style.display='none';
+    el('resultAnalysis').style.display='none';
+    stage.classList.remove('result-danger');
+    state='start'; show(ovStart); drawScene(performance.now());
+  }
+  el('btnRestart').addEventListener('click',resetGame);
+  window.addEventListener('keydown',e=>{
+    if(e.code==='Space'){ e.preventDefault(); onPress(); }
+  });
+  // tap support
+  stage.addEventListener('pointerdown',e=>{
+    if(state==='running'){ e.preventDefault(); onPress(); }
+  });
+
+  function setStoryVisibility(isVisible){
+    document.body.classList.remove('story-visible');
+    if(isVisible){
+      requestAnimationFrame(()=>{
+        requestAnimationFrame(()=>document.body.classList.add('story-visible'));
+      });
+    }
+  }
+
+  window.addEventListener('message',event=>{
+    if(event.data?.type==='canvas-playbook:game-visibility'){
+      setStoryVisibility(Boolean(event.data.visible));
+    }else if(event.data?.type==='canvas-playbook:game-reset'){
+      setStoryVisibility(false);
+      resetGame();
+    }
+  });
+
+  if(window.self===window.top) setStoryVisibility(true);
+
+  resize();
+  loop();
+})();
+</script>
+</body>
+</html>
