@@ -49,7 +49,42 @@ export function initFilmStory() {
   function setBubble(sequence, step, text) {
     bubble.dataset.sequence = String(sequence);
     bubble.dataset.step = String(step);
-    bubble.textContent = text.replaceAll("\\n", "\n");
+
+    // sequence 5, step 0 → 딸의 전화 수신 알림 UI (16px_Ref 방식)
+    if (sequence === 5 && step === 0) {
+      const callHeader = document.createElement("span");
+      callHeader.className = "call-voice-header";
+      callHeader.setAttribute("aria-hidden", "true");
+
+      const callIcon = document.createElement("span");
+      callIcon.className = "call-voice-icon";
+      callIcon.textContent = "☎";
+
+      const callLabel = document.createElement("span");
+      callLabel.className = "call-voice-label";
+      callLabel.textContent = "사랑하는 딸 ❤️";
+
+      const callWave = document.createElement("span");
+      callWave.className = "call-voice-wave";
+      for (let i = 0; i < 5; i += 1) {
+        callWave.append(document.createElement("i"));
+      }
+      callHeader.append(callIcon, callLabel, callWave);
+
+      const callCopy = document.createElement("span");
+      callCopy.className = "call-voice-copy";
+      text.replaceAll("\\n", "\n").split("\n").forEach((line) => {
+        const lineEl = document.createElement("span");
+        lineEl.className = "call-voice-line";
+        lineEl.textContent = line;
+        callCopy.append(lineEl);
+      });
+
+      bubble.replaceChildren(callHeader, callCopy);
+    } else {
+      bubble.textContent = text.replaceAll("\\n", "\n");
+    }
+
     bubble.classList.remove("bubble-enter", "bubble-hovering", "sequence-boundary-enter");
     void bubble.offsetWidth;
     bubble.classList.add(sequence !== activeSequence ? "sequence-boundary-enter" : "bubble-enter");
