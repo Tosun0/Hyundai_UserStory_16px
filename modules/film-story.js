@@ -1,5 +1,5 @@
-export function shouldAdvanceToGame({ sequence, step, direction, locked }) {
-  return !locked && sequence === 7 && step === 2 && direction > 0;
+export function shouldAdvanceToGame({ sequence, step, direction, locked, stepCount = 3 }) {
+  return !locked && sequence === 7 && step === stepCount - 1 && direction > 0;
 }
 
 export function initFilmStory() {
@@ -16,12 +16,13 @@ export function initFilmStory() {
   const game = document.querySelector("#sq08");
   let activeSequence = 0;
   let activeStep = 0;
+  let activeStepCount = 3;
   let activeState = "";
   let gameSnapLocked = false;
   let touchStartY = 0;
 
   function advanceToGame(direction) {
-    if (!shouldAdvanceToGame({ sequence: activeSequence, step: activeStep, direction, locked: gameSnapLocked })) return false;
+    if (!shouldAdvanceToGame({ sequence: activeSequence, step: activeStep, stepCount: activeStepCount, direction, locked: gameSnapLocked })) return false;
     gameSnapLocked = true;
     game?.scrollIntoView({ behavior: "smooth", block: "start" });
     window.setTimeout(() => { gameSnapLocked = false; }, 1100);
@@ -88,6 +89,7 @@ export function initFilmStory() {
     root.dataset.currentSequence = String(sequence);
     root.dataset.currentStep = String(step);
     activeStep = step;
+    activeStepCount = steps;
     const windowCenter = activeWindow.offsetTop + (activeWindow.offsetHeight / 2);
     const follow = Math.min(Math.max((enter - .18) / .82, 0), 1);
     const easedFollow = follow * follow * (3 - (2 * follow));

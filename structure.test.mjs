@@ -48,6 +48,7 @@ assert.doesNotMatch(filmModule, /isCurrent && index === step/);
 assert.match(scenarioModule, /clearTimeout\(wheelUnlockTimer\)/);
 assert.match(scenarioModule, /setTimeout\(\(\) => \{ wheelLocked = false; \}, 180\)/);
 assert.equal(shouldAdvanceToGame({ sequence: 7, step: 2, direction: 1, locked: false }), true);
+assert.equal(shouldAdvanceToGame({ sequence: 7, step: 0, stepCount: 1, direction: 1, locked: false }), true);
 assert.equal(shouldAdvanceToGame({ sequence: 7, step: 1, direction: 1, locked: false }), false);
 assert.equal(shouldAdvanceToGame({ sequence: 7, step: 2, direction: -1, locked: false }), false);
 assert.equal(shouldAdvanceToGame({ sequence: 7, step: 2, direction: 1, locked: true }), false);
