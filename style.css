@@ -28,6 +28,8 @@ html, body {
   font-family: var(--font-sans);
   overflow-x: hidden;
   scroll-behavior: smooth;
+  /* 스크롤바 공간 항상 확보 → overflow 변경 시 좌우 레이아웃 시프트 없음 */
+  scrollbar-gutter: stable;
 }
 
 .visual-filters {

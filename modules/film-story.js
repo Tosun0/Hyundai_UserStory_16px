@@ -19,6 +19,7 @@ export function initFilmStory() {
   let activeStepCount = 3;
   let activeState = "";
   let gameSnapLocked = false;
+  let highlightLatched = false;   // 한 번 켜지면 게임 구역 진입 후에도 유지
 
   function advanceToGame(direction) {
     if (!shouldAdvanceToGame({ sequence: activeSequence, step: activeStep, stepCount: activeStepCount, direction, locked: gameSnapLocked })) return false;
@@ -148,7 +149,11 @@ export function initFilmStory() {
       void copy.offsetWidth;
       copy.classList.add("sequence-boundary-enter");
     }
-    root.classList.toggle("highlight-ready", enter > .985 && exit > .55);
+    // highlight-ready: 완전 진입 시 켜지고, 게임 구역으로 내려가도 꺼지지 않음
+    if (enter > .985 && exit > .55) highlightLatched = true;
+    // filmStory 위쪽으로 완전히 벗어나면(enter=0) 리셋
+    if (enter < .01) highlightLatched = false;
+    root.classList.toggle("highlight-ready", highlightLatched);
   }
 
   function handleWheel(deltaY) {

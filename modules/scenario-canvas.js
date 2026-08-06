@@ -121,11 +121,31 @@ export function initScenarioCanvas({ onReturnToGame }) {
     document.addEventListener("wheel", handleWheel, { capture: true, passive: false });
   }
 
+  // ── 스크롤 잠금/해제: position fixed body (scrollY 보존, 좌우 시프트 없음) ─
+  let savedScrollY = 0;
+
+  function lockScroll() {
+    savedScrollY = window.scrollY;
+    document.body.style.position = "fixed";
+    document.body.style.top      = `-${savedScrollY}px`;
+    document.body.style.left     = "0";
+    document.body.style.right    = "0";
+    document.body.style.overflow = "hidden";
+  }
+
+  function unlockScroll() {
+    document.body.style.position = "";
+    document.body.style.top      = "";
+    document.body.style.left     = "";
+    document.body.style.right    = "";
+    document.body.style.overflow = "";
+    window.scrollTo({ top: savedScrollY, behavior: "instant" });
+  }
+
   // ── 닫기 ─────────────────────────────────────────────────────────────────
   function onExitTransitionDone(e) {
     if (e.propertyName === "transform" || e.propertyName === "visibility") {
-      document.documentElement.style.overflow = "";
-      document.documentElement.style.paddingRight = "";
+      unlockScroll();
       root.removeEventListener("transitionend", onExitTransitionDone);
     }
   }
@@ -138,10 +158,7 @@ export function initScenarioCanvas({ onReturnToGame }) {
     window.clearTimeout(inertiaFlushTimer);
     peakDelta = 0;
 
-    // 스크롤바 너비 보정 후 overflow 잠금 → 좌우 레이아웃 흔들림 방지
-    const scrollbarW = window.innerWidth - document.documentElement.clientWidth;
-    document.documentElement.style.paddingRight = `${scrollbarW}px`;
-    document.documentElement.style.overflow = "hidden";
+    lockScroll();
     root.addEventListener("transitionend", onExitTransitionDone);
 
     root.classList.remove("active");
