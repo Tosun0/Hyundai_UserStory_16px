@@ -36,7 +36,7 @@ assert.doesNotMatch(html, /T_Schedule_01\.png/);
 assert.match(html, /history\.scrollRestoration = "manual"/);
 assert.match(html, /event\.persisted/);
 assert.doesNotMatch(html, /scenario-header|scenarioBackButton/);
-assert.match(scenarioModule, /#rewindBtn/);
+assert.doesNotMatch(html, /rewindBtn|aria-label="조회"|aria-label="공유"/);
 assert.match(style, /scenario-header-arrive/);
 assert.match(style, /scenario-canvas-stage:not\(\.active\) \.canvas-slide img/);
 assert.doesNotMatch(`${game}\n${scenarioModule}`, /deltaY.*(?:12|32)/);
