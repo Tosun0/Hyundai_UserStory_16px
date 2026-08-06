@@ -19,7 +19,8 @@ export function initFilmStory() {
   let activeStepCount = 3;
   let activeState = "";
   let gameSnapLocked = false;
-  let highlightLatched = false;   // 한 번 켜지면 게임 구역 진입 후에도 유지
+  let highlightLatched = false;
+  let everVisible = false;   // is-visible 한 번 켜지면 영구 유지 (애니메이션 재트리거 방지)
 
   function advanceToGame(direction) {
     if (!shouldAdvanceToGame({ sequence: activeSequence, step: activeStep, stepCount: activeStepCount, direction, locked: gameSnapLocked })) return false;
@@ -105,7 +106,8 @@ export function initFilmStory() {
     const transition = Math.min(Math.max((scrollY - transitionStart) / (viewHeight / .7), 0), 1);
     const easedTransition = transition * transition * (3 - (2 * transition));
     root.style.setProperty("--film-story-visible", visible.toFixed(3));
-    root.classList.toggle("is-visible", visible > 0.05);
+    if (visible > 0.05) everVisible = true;
+    root.classList.toggle("is-visible", everVisible);
     root.classList.toggle("is-entering", enter > 0 && enter < .999);
     stage.style.transform = `translate3d(0, ${(-easedTransition * viewHeight).toFixed(1)}px, 0)`;
     stage.style.opacity = (visible * (1 - easedTransition)).toFixed(3);
