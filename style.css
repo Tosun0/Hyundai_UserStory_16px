@@ -28,9 +28,6 @@ html, body {
   font-family: var(--font-sans);
   overflow-x: hidden;
   scroll-behavior: smooth;
-  /* proximity: 세그먼트 경계에서 자연스럽게 멈춤. mandatory와 달리
-     sticky 기반 filmStory 애니메이션 진행을 방해하지 않는다. */
-  scroll-snap-type: y proximity;
 }
 
 .visual-filters {
@@ -438,8 +435,6 @@ html, body {
 .sequence-segment {
   position: relative;
   height: calc(var(--sequence-steps, 3) * 100vh);
-  /* 각 스텝 경계에서 proximity snap → 맥 트랙패드 관성이 세그먼트를 통째로 날리지 못함 */
-  scroll-snap-align: start;
 }
 
 .sequence-segment[data-steps="1"] { --sequence-steps: 1; }
