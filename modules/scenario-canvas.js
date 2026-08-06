@@ -125,6 +125,7 @@ export function initScenarioCanvas({ onReturnToGame }) {
   function onExitTransitionDone(e) {
     if (e.propertyName === "transform" || e.propertyName === "visibility") {
       document.documentElement.style.overflow = "";
+      document.documentElement.style.paddingRight = "";
       root.removeEventListener("transitionend", onExitTransitionDone);
     }
   }
@@ -138,7 +139,9 @@ export function initScenarioCanvas({ onReturnToGame }) {
     peakDelta = 0;
 
     // html overflow 잠금 → 닫힘 애니메이션(720ms) 동안 스크롤 차단
-    // scrollbar-gutter: stable 적용돼 있어 좌우 시프트 없음
+    // 스크롤바 너비만큼 paddingRight 보정 → 좌우 레이아웃 시프트 없음
+    const scrollbarW = window.innerWidth - document.documentElement.clientWidth;
+    document.documentElement.style.paddingRight = `${scrollbarW}px`;
     document.documentElement.style.overflow = "hidden";
     root.addEventListener("transitionend", onExitTransitionDone);
 
