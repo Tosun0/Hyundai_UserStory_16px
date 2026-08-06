@@ -19,6 +19,8 @@ assert.match(html, /id="filmStory"/);
 assert.match(html, /id="sq08"/);
 assert.match(html, /id="gameSkipButton"[^>]*>게임 건너뛰기<\/button>/);
 assert.match(html, /id="scenarioCanvas"/);
+assert.match(app, /window\.addEventListener\("scroll", renderScroll, \{ passive: true \}\)/);
+assert.doesNotMatch(app, /frameRequested|requestAnimationFrame\(renderScroll\)/);
 assert.match(html, /핸들을 놓기엔, 내 인생은 아직 주행 중/);
 assert.match(html, /고령 운전자의 하루, <span>원점으로<\/span> 돌아오다\./);
 assert.match(html, /data-sequence="3" data-steps="2"/);

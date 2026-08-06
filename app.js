@@ -9,18 +9,12 @@ let gameSequence;
 const scenarioCanvas = initScenarioCanvas({ onReturnToGame: () => gameSequence.reset() });
 gameSequence = initGameSequence({ onComplete: scenarioCanvas.open });
 
-let frameRequested = false;
-
 function renderScroll() {
-  frameRequested = false;
+  if (scenarioCanvas.isOpen()) return;
   intro.update(window.scrollY);
   filmStory.update(window.scrollY);
 }
 
-window.addEventListener("scroll", () => {
-  if (frameRequested || scenarioCanvas.isOpen()) return;
-  frameRequested = true;
-  window.requestAnimationFrame(renderScroll);
-}, { passive: true });
+window.addEventListener("scroll", renderScroll, { passive: true });
 
 renderScroll();
