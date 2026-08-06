@@ -18,7 +18,6 @@ export function initScenarioCanvas({ onReturnToGame }) {
   let index      = 0;
   let openState  = false;
   let closingState = false;
-  let scrollbarWidth = 0;
 
   // ── 맥 관성 필터 상태 ────────────────────────────────────────────────────
   let peakDelta        = 0;
@@ -110,11 +109,9 @@ export function initScenarioCanvas({ onReturnToGame }) {
     window.clearTimeout(exitUnlockTimer);
     document.removeEventListener("wheel", handleExitWheel, true);
     document.documentElement.classList.remove("scenario-exit-lock");
-    document.body.style.paddingRight = "";
+    root.classList.remove("closing");
     closingState = false;
     openState = true;
-    scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-    if (scrollbarWidth > 0) document.body.style.paddingRight = `${scrollbarWidth}px`;
     index = 0;
     peakDelta = 0;
     cooldownUntil = 0;
@@ -140,8 +137,8 @@ export function initScenarioCanvas({ onReturnToGame }) {
     document.removeEventListener("wheel", handleExitWheel, true);
     onReturnToGame();
     closingState = false;
+    root.classList.remove("closing");
     document.documentElement.classList.remove("scenario-exit-lock");
-    document.body.style.paddingRight = "";
   }
 
   function scheduleExitUnlock() {
@@ -168,6 +165,7 @@ export function initScenarioCanvas({ onReturnToGame }) {
     document.documentElement.classList.add("scenario-exit-lock");
     document.addEventListener("wheel", handleExitWheel, { capture: true, passive: false });
 
+    root.classList.add("closing");
     root.classList.remove("active");
     root.setAttribute("aria-hidden", "true");
     document.documentElement.classList.remove("scenario-open");

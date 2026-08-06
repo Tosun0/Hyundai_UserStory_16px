@@ -1,15 +1,21 @@
 /**
  * scroll-router.js (16px)
  *
- * wheel 이벤트 처리 완전 제거.
- * window.scroll 이벤트로 scrollY를 읽어 intro/filmStory 업데이트만 담당.
- * 16px_Ref 방식 그대로.
+ * window.scroll로 화면 상태를 갱신한다.
+ * wheel은 필름과 게임의 마지막 경계에서만 선택적으로 소비한다.
  */
-export function initScrollRouter({ onScroll }) {
+export function initScrollRouter({ onScroll, onWheel }) {
+  const handleWheel = (event) => {
+    if (!onWheel?.(event.deltaY)) return;
+    event.preventDefault();
+  };
+
   window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("wheel", handleWheel, { passive: false });
   onScroll();
 
   return () => {
     window.removeEventListener("scroll", onScroll);
+    window.removeEventListener("wheel", handleWheel);
   };
 }

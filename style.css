@@ -1637,11 +1637,6 @@ body.game-chrome-hidden .scroll-prompt {
   letter-spacing: -.4px;
 }
 
-.scenario-open,
-.scenario-exit-lock {
-  overflow: hidden;
-}
-
 /* ──────────────────────────────────────────────
    시나리오 캔버스: fixed 오버레이 (복원)
    내부 .canvas-scroll-container 가 네이티브 scroll-snap 처리.
@@ -1665,6 +1660,16 @@ body.game-chrome-hidden .scroll-prompt {
   visibility: visible;
   pointer-events: auto;
   transform: translateY(0);
+}
+
+.scenario-canvas-stage.active,
+.scenario-canvas-stage.closing {
+  touch-action: none;
+}
+
+.scenario-canvas-stage.closing {
+  visibility: visible;
+  pointer-events: auto;
 }
 
 /* 캔버스 트랙: translateX 가로 전환 (원본 동작) */

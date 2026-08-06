@@ -2,10 +2,10 @@
  * Hyundai UserStory 16px
  *
  * 16px_Ref 방식:
- *   - wheel 이벤트 JS 처리 없음
+ *   - wheel 이벤트는 scroll-router에서 필름↔게임 경계만 처리
  *   - window.scroll (passive) 로 scrollY 읽어 intro/filmStory 업데이트
  *   - scenarioCanvas: fixed 오버레이 유지, 내부 scroll-snap 컨테이너로 슬라이드 전환
- *   - filmStory: scroll-snap-type: proximity 로 세그먼트 스킵 방지
+ *   - filmStory: 네이티브 스크롤 유지, 마지막 구간만 게임 전환
  */
 
 import { initVhsIntro }      from "./modules/vhs-intro.js";
@@ -30,4 +30,4 @@ function renderScroll() {
   filmStory.update(y);
 }
 
-initScrollRouter({ onScroll: renderScroll });
+initScrollRouter({ onScroll: renderScroll, onWheel: filmStory.handleWheel });
