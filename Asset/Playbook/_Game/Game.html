@@ -724,8 +724,13 @@
     setTimeout(()=>{ scenarioNavigationLocked=false; },700);
   }
   window.addEventListener('wheel',event=>{
+    if(event.deltaY<0 && window.scrollY<=0){
+      event.preventDefault();
+      window.parent.postMessage({type:'canvas-playbook:game-scroll-up'},'*');
+      return;
+    }
     if(event.deltaY>0) requestScenarioCanvas();
-  },{passive:true});
+  },{passive:false});
   window.addEventListener('touchstart',event=>{
     scenarioTouchStartY=event.changedTouches[0].clientY;
   },{passive:true});

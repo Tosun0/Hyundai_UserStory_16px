@@ -11,11 +11,25 @@ export function initGameSequence({ onComplete }) {
   if (!root) return;
   let progress = "not-started";
   let scenarioVisible = false;
+  let syncedVisibility;
+  let filmReturnLocked = false;
 
-  const syncVisibility = (visible) => frame?.contentWindow?.postMessage({
-    type: "canvas-playbook:game-visibility",
-    visible,
-  }, "*");
+  const syncVisibility = (visible, force = false) => {
+    if (!force && syncedVisibility === visible) return;
+    syncedVisibility = visible;
+    frame?.contentWindow?.postMessage({
+      type: "canvas-playbook:game-visibility",
+      visible,
+    }, "*");
+  };
+
+  const returnToFilm = () => {
+    if (filmReturnLocked) return;
+    filmReturnLocked = true;
+    const rootTop = root.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo({ top: Math.max(0, rootTop - window.innerHeight), behavior: "smooth" });
+    window.setTimeout(() => { filmReturnLocked = false; }, 900);
+  };
 
   const openScenario = () => {
     if (scenarioVisible) return;
@@ -41,11 +55,12 @@ export function initGameSequence({ onComplete }) {
     syncVisibility(active);
   }, { threshold: [0, .01, .5, .9, .995, 1] });
 
-  frame?.addEventListener("load", () => syncVisibility(root.classList.contains("is-active")));
+  frame?.addEventListener("load", () => syncVisibility(root.classList.contains("is-active"), true));
   window.addEventListener("message", (event) => {
     if (event.source !== frame?.contentWindow) return;
     const type = event.data?.type;
     progress = nextGameProgress(progress, type);
+    if (type === "canvas-playbook:game-scroll-up") returnToFilm();
     if (type === "canvas-playbook:scenario-open") openScenario();
     if (type === "canvas-playbook:game-complete" && root.classList.contains("is-active")) openScenario();
   });

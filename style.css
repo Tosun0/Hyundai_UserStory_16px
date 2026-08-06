@@ -494,11 +494,12 @@ html, body {
   width: min(54vw, 621px);
   aspect-ratio: 621 / 3722;
   will-change: transform;
-  transition: none;
+  transition: transform .8s cubic-bezier(.22, .8, .25, 1);
 }
 
 .film-story.is-entering .shared-film {
-  transition: transform .12s cubic-bezier(.22, .8, .25, 1);
+  transition-duration: .12s;
+  transition-timing-function: cubic-bezier(.22, .8, .25, 1);
 }
 
 .shared-film-mask {

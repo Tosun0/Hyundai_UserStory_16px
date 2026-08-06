@@ -114,6 +114,7 @@ export function initScenarioCanvas({ onReturnToGame }) {
     closingState = false;
     openState = true;
     scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    if (scrollbarWidth > 0) document.body.style.paddingRight = `${scrollbarWidth}px`;
     index = 0;
     peakDelta = 0;
     cooldownUntil = 0;
@@ -165,7 +166,6 @@ export function initScenarioCanvas({ onReturnToGame }) {
     peakDelta = 0;
 
     document.documentElement.classList.add("scenario-exit-lock");
-    if (scrollbarWidth > 0) document.body.style.paddingRight = `${scrollbarWidth}px`;
     document.addEventListener("wheel", handleExitWheel, { capture: true, passive: false });
 
     root.classList.remove("active");
