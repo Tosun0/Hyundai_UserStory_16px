@@ -434,7 +434,7 @@ html, body {
 
 .sequence-segment {
   position: relative;
-  height: calc(var(--sequence-steps, 3) * 100vh);
+  height: calc(var(--sequence-steps, 3) * 150vh);
 }
 
 .sequence-segment[data-steps="1"] { --sequence-steps: 1; }
