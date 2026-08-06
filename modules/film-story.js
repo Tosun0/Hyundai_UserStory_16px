@@ -118,13 +118,16 @@ export function initFilmStory() {
   }
 
   window.addEventListener("wheel", (event) => {
+    if (document.documentElement.classList.contains("scenario-open")) return;
     if (!event.deltaY || !advanceToGame(Math.sign(event.deltaY))) return;
     event.preventDefault();
   }, { passive: false });
   window.addEventListener("touchstart", (event) => {
+    if (document.documentElement.classList.contains("scenario-open")) return;
     touchStartY = event.changedTouches[0].clientY;
   }, { passive: true });
   window.addEventListener("touchend", (event) => {
+    if (document.documentElement.classList.contains("scenario-open")) return;
     const distanceY = touchStartY - event.changedTouches[0].clientY;
     if (Math.abs(distanceY) < 40 || !advanceToGame(Math.sign(distanceY))) return;
     event.preventDefault();

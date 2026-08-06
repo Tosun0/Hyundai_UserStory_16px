@@ -47,6 +47,7 @@ assert.match(scenarioModule, /onReturnToGame\(\)/);
 assert.match(filmModule, /windowElement\.dataset\.activeStep = String\(step\)/);
 assert.match(filmModule, /const visibleStep = Number\(windowElement\.dataset\.activeStep \|\| 0\)/);
 assert.doesNotMatch(filmModule, /isCurrent && index === step/);
+assert.match(filmModule, /document\.documentElement\.classList\.contains\("scenario-open"\)/);
 assert.match(scenarioModule, /clearTimeout\(wheelUnlockTimer\)/);
 assert.match(scenarioModule, /setTimeout\(\(\) => \{ wheelLocked = false; \}, 180\)/);
 assert.equal(shouldAdvanceToGame({ sequence: 7, step: 2, direction: 1, locked: false }), true);
