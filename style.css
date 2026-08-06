@@ -1662,12 +1662,14 @@ body.game-chrome-hidden .scroll-prompt {
   transform: translateY(0);
 }
 
-/* 내부 스크롤 컨테이너: 브라우저가 관성 스크롤 전담 */
+/* 내부 스크롤 컨테이너: 가로 scroll-snap (원본과 동일 방향) */
 .canvas-scroll-container {
   width: 100%;
   height: 100%;
-  overflow-y: scroll;
-  scroll-snap-type: y mandatory;
+  display: flex;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
 }
@@ -1677,6 +1679,7 @@ body.game-chrome-hidden .scroll-prompt {
 }
 
 .canvas-slide {
+  flex: 0 0 100%;
   height: 100%;
   scroll-snap-align: start;
   scroll-snap-stop: always;

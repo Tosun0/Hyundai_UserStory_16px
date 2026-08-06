@@ -24,10 +24,10 @@ export function initScenarioCanvas({ onReturnToGame }) {
     }
   }
 
-  // ── 컨테이너 scroll 이벤트 → 인디케이터 동기화 (16px_Ref 방식) ──────────
+  // ── 컨테이너 scroll 이벤트 → 인디케이터 동기화 ──────────────────────────
   function onContainerScroll() {
     if (!container) return;
-    const idx = Math.round(container.scrollTop / container.clientHeight);
+    const idx = Math.round(container.scrollLeft / container.clientWidth);
     renderIndicator(Math.max(0, Math.min(idx, total - 1)));
   }
 
@@ -35,8 +35,7 @@ export function initScenarioCanvas({ onReturnToGame }) {
   function open() {
     if (!root || !container) return;
     openState = true;
-    // 항상 첫 슬라이드부터 (instant, 애니메이션 없이)
-    container.scrollTo({ top: 0, behavior: "instant" });
+    container.scrollTo({ left: 0, behavior: "instant" });
     renderIndicator(0);
     root.classList.add("active");
     root.setAttribute("aria-hidden", "false");
@@ -55,12 +54,12 @@ export function initScenarioCanvas({ onReturnToGame }) {
     onReturnToGame();
   }
 
-  // ── 인디케이터 점 클릭 → 해당 슬라이드로 스크롤 ─────────────────────────
+  // ── 인디케이터 점 클릭 → 해당 슬라이드로 가로 스크롤 ────────────────────
   dots.forEach((dot) => {
     dot.addEventListener("click", () => {
       const idx = Number(dot.dataset.index ?? "0");
       container?.scrollTo({
-        top: idx * (container.clientHeight),
+        left: idx * container.clientWidth,
         behavior: "smooth",
       });
     });
