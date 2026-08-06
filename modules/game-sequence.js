@@ -47,12 +47,10 @@ export function initGameSequence({ onComplete }) {
   const observer = new IntersectionObserver((entries) => {
     const ratio = entries.reduce((highest, entry) => entry.isIntersecting ? Math.max(highest, entry.intersectionRatio) : highest, 0);
     const active = ratio >= .995;
-    root.classList.toggle("is-entering", ratio > .01 && !active);
     root.classList.toggle("is-active", active);
-    document.body.classList.toggle("game-entering", ratio > .01);
     document.body.classList.toggle("game-active", active);
     document.body.classList.toggle("game-chrome-hidden", ratio >= .9);
-    syncVisibility(active);
+    syncVisibility(ratio > .01);
   }, { threshold: [0, .01, .5, .9, .995, 1] });
 
   frame?.addEventListener("load", () => syncVisibility(root.classList.contains("is-active"), true));
