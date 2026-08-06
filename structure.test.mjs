@@ -12,6 +12,7 @@ const game = await readFile(resolve(root, "Asset/Playbook/_Game/Game.html"), "ut
 const gameModule = await readFile(resolve(root, "modules/game-sequence.js"), "utf8");
 const scenarioModule = await readFile(resolve(root, "modules/scenario-canvas.js"), "utf8");
 const filmModule = await readFile(resolve(root, "modules/film-story.js"), "utf8");
+const scrollRouter = await readFile(resolve(root, "modules/scroll-router.js"), "utf8");
 const style = await readFile(resolve(root, "style.css"), "utf8");
 
 assert.match(html, /id="sq01"/);
@@ -19,7 +20,10 @@ assert.match(html, /id="filmStory"/);
 assert.match(html, /id="sq08"/);
 assert.match(html, /id="gameSkipButton"[^>]*>게임 건너뛰기<\/button>/);
 assert.match(html, /id="scenarioCanvas"/);
-assert.match(app, /window\.addEventListener\("scroll", renderScroll, \{ passive: true \}\)/);
+assert.match(app, /initScrollRouter\(\{ onScroll: renderScroll, filmStory, scenarioCanvas \}\)/);
+assert.doesNotMatch(`${app}\n${filmModule}\n${scenarioModule}`, /window\.addEventListener\("(?:scroll|wheel|touchstart|touchend)"/);
+assert.match(scrollRouter, /window\.addEventListener\("scroll", onScroll, \{ passive: true \}\)/);
+assert.match(scrollRouter, /window\.addEventListener\("wheel", handleWheel, \{ passive: false \}\)/);
 assert.doesNotMatch(app, /frameRequested|requestAnimationFrame\(renderScroll\)/);
 assert.match(html, /핸들을 놓기엔, 내 인생은 아직 주행 중/);
 assert.match(html, /고령 운전자의 하루, <span>원점으로<\/span> 돌아오다\./);
@@ -65,7 +69,7 @@ const localAssets = [...html.matchAll(/(?:src|href)="([^"?#]+)(?:[?#][^"]*)?"/g)
 
 await Promise.all(localAssets.map((path) => access(resolve(root, path))));
 
-for (const moduleName of ["vhs-intro", "film-story", "game-sequence", "scenario-canvas"]) {
+for (const moduleName of ["vhs-intro", "film-story", "game-sequence", "scenario-canvas", "scroll-router"]) {
   assert.match(app, new RegExp(`modules/${moduleName}\\.js`));
   await access(resolve(root, "modules", `${moduleName}.js`));
 }

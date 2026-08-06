@@ -10,8 +10,6 @@ export function initScenarioCanvas({ onReturnToGame }) {
   let openState = false;
   let wheelLocked = false;
   let wheelUnlockTimer;
-  let touchStartX = 0;
-  let touchStartY = 0;
 
   function render() {
     track.style.transform = `translateX(-${index * 100}%)`;
@@ -25,6 +23,8 @@ export function initScenarioCanvas({ onReturnToGame }) {
   }
 
   function open() {
+    window.clearTimeout(wheelUnlockTimer);
+    wheelLocked = false;
     openState = true;
     index = 0;
     root.classList.add("active");
@@ -35,6 +35,8 @@ export function initScenarioCanvas({ onReturnToGame }) {
   }
 
   function close() {
+    window.clearTimeout(wheelUnlockTimer);
+    wheelLocked = false;
     openState = false;
     root.classList.remove("active");
     root.setAttribute("aria-hidden", "true");
@@ -43,36 +45,29 @@ export function initScenarioCanvas({ onReturnToGame }) {
     onReturnToGame();
   }
 
-  window.addEventListener("wheel", (event) => {
-    if (!openState) return;
-    event.preventDefault();
+  function handleWheel(deltaY) {
+    if (!openState) return false;
     window.clearTimeout(wheelUnlockTimer);
     wheelUnlockTimer = window.setTimeout(() => { wheelLocked = false; }, 180);
-    if (wheelLocked || !event.deltaY) return;
+    if (wheelLocked || !deltaY) return true;
     wheelLocked = true;
-    const direction = Math.sign(event.deltaY);
+    const direction = Math.sign(deltaY);
     if (direction < 0 && index === 0) close();
     else move(direction);
-  }, { passive: false });
-  window.addEventListener("touchstart", (event) => {
-    if (!openState) return;
-    touchStartX = event.changedTouches[0].clientX;
-    touchStartY = event.changedTouches[0].clientY;
-  }, { passive: true });
-  window.addEventListener("touchend", (event) => {
-    if (!openState) return;
-    const distanceX = touchStartX - event.changedTouches[0].clientX;
-    const distanceY = touchStartY - event.changedTouches[0].clientY;
-    if (Math.abs(distanceX) < 40 && Math.abs(distanceY) < 40) return;
-    const direction = Math.sign(Math.abs(distanceX) > Math.abs(distanceY) ? distanceX : distanceY);
+    return true;
+  }
+
+  function handleSwipe(direction) {
+    if (!openState || !direction) return false;
     if (direction < 0 && index === 0) close();
     else move(direction);
-  }, { passive: true });
+    return true;
+  }
   dots.forEach((dot) => dot.addEventListener("click", () => {
     index = Number(dot.dataset.index);
     render();
   }));
   back?.addEventListener("click", close);
 
-  return { open, isOpen: () => openState };
+  return { open, isOpen: () => openState, handleWheel, handleSwipe };
 }

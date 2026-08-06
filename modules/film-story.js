@@ -19,7 +19,6 @@ export function initFilmStory() {
   let activeStepCount = 3;
   let activeState = "";
   let gameSnapLocked = false;
-  let touchStartY = 0;
 
   function advanceToGame(direction) {
     if (!shouldAdvanceToGame({ sequence: activeSequence, step: activeStep, stepCount: activeStepCount, direction, locked: gameSnapLocked })) return false;
@@ -117,21 +116,15 @@ export function initFilmStory() {
     root.classList.toggle("highlight-ready", enter > .985 && exit > .55);
   }
 
-  window.addEventListener("wheel", (event) => {
-    if (document.documentElement.classList.contains("scenario-open")) return;
-    if (!event.deltaY || !advanceToGame(Math.sign(event.deltaY))) return;
-    event.preventDefault();
-  }, { passive: false });
-  window.addEventListener("touchstart", (event) => {
-    if (document.documentElement.classList.contains("scenario-open")) return;
-    touchStartY = event.changedTouches[0].clientY;
-  }, { passive: true });
-  window.addEventListener("touchend", (event) => {
-    if (document.documentElement.classList.contains("scenario-open")) return;
-    const distanceY = touchStartY - event.changedTouches[0].clientY;
-    if (Math.abs(distanceY) < 40 || !advanceToGame(Math.sign(distanceY))) return;
-    event.preventDefault();
-  }, { passive: false });
+  function handleWheel(deltaY) {
+    if (document.documentElement.classList.contains("scenario-open") || !deltaY) return false;
+    return advanceToGame(Math.sign(deltaY));
+  }
 
-  return { update };
+  function handleSwipe(direction) {
+    if (document.documentElement.classList.contains("scenario-open") || !direction) return false;
+    return advanceToGame(direction);
+  }
+
+  return { update, handleWheel, handleSwipe };
 }

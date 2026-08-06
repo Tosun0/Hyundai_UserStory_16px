@@ -2,6 +2,7 @@ import { initVhsIntro } from "./modules/vhs-intro.js";
 import { initFilmStory } from "./modules/film-story.js";
 import { initGameSequence } from "./modules/game-sequence.js";
 import { initScenarioCanvas } from "./modules/scenario-canvas.js";
+import { initScrollRouter } from "./modules/scroll-router.js";
 
 const intro = initVhsIntro();
 const filmStory = initFilmStory();
@@ -15,6 +16,4 @@ function renderScroll() {
   filmStory.update(window.scrollY);
 }
 
-window.addEventListener("scroll", renderScroll, { passive: true });
-
-renderScroll();
+initScrollRouter({ onScroll: renderScroll, filmStory, scenarioCanvas });
