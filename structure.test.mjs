@@ -17,6 +17,7 @@ const style = await readFile(resolve(root, "style.css"), "utf8");
 assert.match(html, /id="sq01"/);
 assert.match(html, /id="filmStory"/);
 assert.match(html, /id="sq08"/);
+assert.match(html, /id="gameSkipButton"[^>]*>게임 건너뛰기<\/button>/);
 assert.match(html, /id="scenarioCanvas"/);
 assert.match(html, /핸들을 놓기엔, 내 인생은 아직 주행 중/);
 assert.match(html, /고령 운전자의 하루, <span>원점으로<\/span> 돌아오다\./);
