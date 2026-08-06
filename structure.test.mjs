@@ -23,7 +23,7 @@ assert.match(html, /id="scenarioCanvas"/);
 assert.match(app, /initScrollRouter\(\{ onScroll: renderScroll, filmStory, scenarioCanvas \}\)/);
 assert.doesNotMatch(`${app}\n${filmModule}\n${scenarioModule}`, /window\.addEventListener\("(?:scroll|wheel|touchstart|touchend)"/);
 assert.match(scrollRouter, /window\.addEventListener\("scroll", onScroll, \{ passive: true \}\)/);
-assert.match(scrollRouter, /window\.addEventListener\("wheel", handleWheel, \{ passive: false \}\)/);
+assert.match(scrollRouter, /document\.addEventListener\("wheel", handleWheel, \{ capture: true, passive: false \}\)/);
 assert.doesNotMatch(app, /frameRequested|requestAnimationFrame\(renderScroll\)/);
 assert.match(html, /핸들을 놓기엔, 내 인생은 아직 주행 중/);
 assert.match(html, /고령 운전자의 하루, <span>원점으로<\/span> 돌아오다\./);

@@ -29,15 +29,15 @@ export function initScrollRouter({ onScroll, filmStory, scenarioCanvas }) {
   }
 
   window.addEventListener("scroll", onScroll, { passive: true });
-  window.addEventListener("wheel", handleWheel, { passive: false });
-  window.addEventListener("touchstart", handleTouchStart, { passive: true });
-  window.addEventListener("touchend", handleTouchEnd, { passive: false });
+  document.addEventListener("wheel", handleWheel, { capture: true, passive: false });
+  document.addEventListener("touchstart", handleTouchStart, { capture: true, passive: true });
+  document.addEventListener("touchend", handleTouchEnd, { capture: true, passive: false });
   onScroll();
 
   return () => {
     window.removeEventListener("scroll", onScroll);
-    window.removeEventListener("wheel", handleWheel);
-    window.removeEventListener("touchstart", handleTouchStart);
-    window.removeEventListener("touchend", handleTouchEnd);
+    document.removeEventListener("wheel", handleWheel, true);
+    document.removeEventListener("touchstart", handleTouchStart, true);
+    document.removeEventListener("touchend", handleTouchEnd, true);
   };
 }
