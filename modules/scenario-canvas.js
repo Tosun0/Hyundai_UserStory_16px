@@ -122,13 +122,28 @@ export function initScenarioCanvas({ onReturnToGame }) {
   }
 
   // ── 닫기 ─────────────────────────────────────────────────────────────────
+  function onExitTransitionDone(e) {
+    // 닫힘 트랜지션(transform 720ms)이 끝나면 body 스크롤 복원
+    // → 그사이 맥 관성 이벤트 소멸
+    if (e.propertyName === "transform") {
+      document.body.style.overflow = "";
+      root.removeEventListener("transitionend", onExitTransitionDone);
+    }
+  }
+
   function close() {
     if (!root) return;
     openState = false;
-    // 오버레이가 닫히면 즉시 wheel 이벤트 해제 → filmStory 충돌 없음
+
+    // wheel 즉시 해제 (filmStory 충돌 방지)
     document.removeEventListener("wheel", handleWheel, true);
     window.clearTimeout(inertiaFlushTimer);
     peakDelta = 0;
+
+    // 닫힘 애니메이션 동안 body 스크롤 잠금
+    // → 맥 관성이 메인 페이지를 즉시 위로 날리지 못함
+    document.body.style.overflow = "hidden";
+    root.addEventListener("transitionend", onExitTransitionDone);
 
     root.classList.remove("active");
     root.setAttribute("aria-hidden", "true");
