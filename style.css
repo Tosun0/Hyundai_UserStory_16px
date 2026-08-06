@@ -1632,77 +1632,27 @@ body.game-chrome-hidden .scroll-prompt {
   overflow: hidden;
 }
 
-.scenario-canvas-stage {
-  position: fixed;
-  z-index: 1000;
-  inset: 0;
-  overflow: hidden;
-  background: #0a0e17;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transform: translateY(7vh);
-  transition: opacity 520ms ease, transform 720ms cubic-bezier(.16, 1, .3, 1), visibility 720ms;
-}
-
-.scenario-canvas-stage.active {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-  transform: translateY(0);
-}
-
-html.scenario-open .top-header {
-  z-index: 1020;
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-  animation: scenario-header-arrive 560ms cubic-bezier(.16, 1, .3, 1) both;
-}
-
-html.scenario-open .header-right,
-html.scenario-open .sub-metrics {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transform: translateY(-6px);
-}
-
-.canvas-track {
-  display: flex;
-  width: 100%;
-  height: 100%;
-  transition: transform 600ms cubic-bezier(.16, 1, .3, 1);
-}
-
-.canvas-slide {
-  flex: 0 0 100%;
-  width: 100%;
-  height: 100%;
+/* 시나리오 캔버스: scroll-snap 섹션 (네이티브 스크롤, 16px_Ref 방식) */
+.canvas-snap-section {
+  height: 100vh;
   display: grid;
   place-items: center;
+  background: #0a0e17;
 }
 
-.canvas-slide img {
+.canvas-snap-section img {
   width: 90%;
   height: auto;
   max-height: 80%;
   object-fit: contain;
   user-select: none;
-  opacity: 1;
-  transform: translateY(0) scale(1);
-  transition: opacity 560ms ease, transform 720ms cubic-bezier(.16, 1, .3, 1);
-  transition-delay: 120ms;
+  border-radius: 8px;
 }
 
-.scenario-canvas-stage:not(.active) .canvas-slide img {
-  opacity: 0;
-  transform: translateY(22px) scale(.985);
-}
-
+/* 고정 인디케이터: 캔버스 구간에서만 표시 */
 .canvas-pagination {
-  position: absolute;
-  z-index: 20;
+  position: fixed;
+  z-index: 1020;
   bottom: 40px;
   left: 50%;
   display: flex;
@@ -1716,14 +1666,21 @@ html.scenario-open .sub-metrics {
   -webkit-backdrop-filter: blur(16px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, .3);
   opacity: 0;
+  pointer-events: none;
   transform: translate(-50%, 12px);
   transition: opacity 360ms ease, transform 520ms cubic-bezier(.16, 1, .3, 1);
 }
 
-.scenario-canvas-stage.active .canvas-pagination {
+body[data-phase="scenario-canvas"] .canvas-pagination {
   opacity: 1;
+  pointer-events: auto;
   transform: translate(-50%, 0);
   transition-delay: 160ms;
+}
+
+@keyframes scenario-header-arrive {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .pagination-dots {
@@ -1739,6 +1696,7 @@ html.scenario-open .sub-metrics {
   border-radius: 50%;
   background: rgb(255 255 255 / .35);
   cursor: pointer;
+  transition: background-color 200ms ease, transform 200ms ease;
 }
 
 .p-dot.active {
@@ -1753,11 +1711,6 @@ html.scenario-open .sub-metrics {
   font-weight: 800;
   letter-spacing: .5px;
   font-variant-numeric: tabular-nums;
-}
-
-@keyframes scenario-header-arrive {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 @media (max-width: 760px) and (orientation: portrait) {
@@ -1786,7 +1739,7 @@ html.scenario-open .sub-metrics {
     font-size: 11px;
   }
 
-  .canvas-slide img {
+  .canvas-snap-section img {
     width: 96%;
     max-height: 76%;
   }
