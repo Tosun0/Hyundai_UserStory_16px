@@ -19,12 +19,14 @@ export function initFilmStory() {
   let activeStepCount = 3;
   let activeState = "";
   let gameSnapLocked = false;
+  let gameReturnY = 0;
   let highlightLatched = false;
   let everVisible = false;   // is-visible 한 번 켜지면 영구 유지 (애니메이션 재트리거 방지)
 
   function advanceToGame(direction) {
     if (!shouldAdvanceToGame({ sequence: activeSequence, step: activeStep, stepCount: activeStepCount, direction, locked: gameSnapLocked })) return false;
     gameSnapLocked = true;
+    gameReturnY = window.scrollY;
     game?.scrollIntoView({ behavior: "smooth", block: "start" });
     window.setTimeout(() => { gameSnapLocked = false; }, 1100);
     return true;
@@ -168,5 +170,5 @@ export function initFilmStory() {
     return advanceToGame(direction);
   }
 
-  return { update, handleWheel, handleSwipe };
+  return { update, handleWheel, handleSwipe, getGameReturnY: () => gameReturnY };
 }

@@ -5,12 +5,14 @@ export function initVhsIntro() {
   const glitch = document.querySelector("#glitchOverlay");
   const prompt = document.querySelector("#scrollPrompt");
   const rewind = document.querySelector("#rewindBtn");
+  const filmStory = document.querySelector("#filmStory");
   const notes = [
     "일정은 똑같은데, 대중교통은 힘들고...<br>어쩔 수 없지만 운전은 해야겠어.",
     "버스는 40분에 한 대뿐이고... 장을 보러 갈 때는<br>무거운 짐 때문에 결국 차를 끌고 나와.",
     "모두의 안전과 나의 자유로운 이동,<br>서로를 이해하는 대안이 필요해.",
   ];
   let activeIndex = 0;
+  let filmSnapLocked = false;
 
   function showFrame(index) {
     if (index === activeIndex) return;
@@ -29,6 +31,18 @@ export function initVhsIntro() {
     showFrame(progress > .65 ? 2 : progress > .3 ? 1 : 0);
   }
 
+  function handleWheel(deltaY) {
+    if (!filmStory || deltaY <= 0) return false;
+    const filmTop = filmStory.getBoundingClientRect().top + window.scrollY;
+    if (window.scrollY >= filmTop - 1) return false;
+    if (!filmSnapLocked) {
+      filmSnapLocked = true;
+      filmStory.scrollIntoView({ behavior: "smooth", block: "start" });
+      window.setTimeout(() => { filmSnapLocked = false; }, 900);
+    }
+    return true;
+  }
+
   prompt?.addEventListener("click", () => document.querySelector("#sq02")?.scrollIntoView({ behavior: "smooth" }));
   rewind?.addEventListener("click", () => {
     if (!document.documentElement.classList.contains("scenario-open")) {
@@ -36,5 +50,5 @@ export function initVhsIntro() {
     }
   });
 
-  return { update };
+  return { update, handleWheel };
 }

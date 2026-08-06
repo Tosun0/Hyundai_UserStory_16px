@@ -4,7 +4,7 @@ export function nextGameProgress(current, eventType) {
   return current;
 }
 
-export function initGameSequence({ onComplete }) {
+export function initGameSequence({ onComplete, getReturnScrollY }) {
   const root = document.querySelector("#sq08");
   const frame = root?.querySelector(".game-frame");
   const skip = document.querySelector("#gameSkipButton");
@@ -26,8 +26,7 @@ export function initGameSequence({ onComplete }) {
   const returnToFilm = () => {
     if (filmReturnLocked) return;
     filmReturnLocked = true;
-    const rootTop = root.getBoundingClientRect().top + window.scrollY;
-    window.scrollTo({ top: Math.max(0, rootTop - window.innerHeight), behavior: "smooth" });
+    window.scrollTo({ top: getReturnScrollY(), behavior: "smooth" });
     window.setTimeout(() => { filmReturnLocked = false; }, 900);
   };
 

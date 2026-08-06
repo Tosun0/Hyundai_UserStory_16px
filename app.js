@@ -20,7 +20,10 @@ const scenarioCanvas = initScenarioCanvas({
   onReturnToGame: () => gameSequence?.reset(),
 });
 let gameSequence;
-gameSequence = initGameSequence({ onComplete: scenarioCanvas.open });
+gameSequence = initGameSequence({
+  onComplete: scenarioCanvas.open,
+  getReturnScrollY: filmStory.getGameReturnY,
+});
 
 function renderScroll() {
   // 시나리오 캔버스가 열려 있으면 메인 스크롤 업데이트 불필요
@@ -30,4 +33,8 @@ function renderScroll() {
   filmStory.update(y);
 }
 
-initScrollRouter({ onScroll: renderScroll, onWheel: filmStory.handleWheel });
+function handleWheel(deltaY) {
+  return intro.handleWheel(deltaY) || filmStory.handleWheel(deltaY);
+}
+
+initScrollRouter({ onScroll: renderScroll, onWheel: handleWheel });
