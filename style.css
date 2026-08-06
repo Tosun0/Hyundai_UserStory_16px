@@ -389,7 +389,7 @@ html, body {
 
 .film-story.is-visible .film-story-stage::before {
   animation:
-    film-blur-enter .8s ease-out .2s forwards,
+    film-blur-enter .8s ease-out .2s both,
     film-turbulence-shape 7s ease-in-out .2s infinite;
 }
 
