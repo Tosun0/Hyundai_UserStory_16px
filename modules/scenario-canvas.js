@@ -121,31 +121,12 @@ export function initScenarioCanvas({ onReturnToGame }) {
     document.addEventListener("wheel", handleWheel, { capture: true, passive: false });
   }
 
-  // ── 스크롤 잠금/해제: position fixed body (scrollY 보존, 좌우 시프트 없음) ─
-  let savedScrollY = 0;
+  // ── 닫기: 레이아웃 변경 없이 wheel만 차단 ───────────────────────────────
+  function handleExitWheel(e) { if (e.deltaY < 0) e.preventDefault(); }
 
-  function lockScroll() {
-    savedScrollY = window.scrollY;
-    document.body.style.position = "fixed";
-    document.body.style.top      = `-${savedScrollY}px`;
-    document.body.style.left     = "0";
-    document.body.style.right    = "0";
-    document.body.style.overflow = "hidden";
-  }
-
-  function unlockScroll() {
-    document.body.style.position = "";
-    document.body.style.top      = "";
-    document.body.style.left     = "";
-    document.body.style.right    = "";
-    document.body.style.overflow = "";
-    window.scrollTo({ top: savedScrollY, behavior: "instant" });
-  }
-
-  // ── 닫기 ─────────────────────────────────────────────────────────────────
   function onExitTransitionDone(e) {
     if (e.propertyName === "transform" || e.propertyName === "visibility") {
-      unlockScroll();
+      document.removeEventListener("wheel", handleExitWheel, true);
       root.removeEventListener("transitionend", onExitTransitionDone);
     }
   }
@@ -158,7 +139,9 @@ export function initScenarioCanvas({ onReturnToGame }) {
     window.clearTimeout(inertiaFlushTimer);
     peakDelta = 0;
 
-    lockScroll();
+    // 캔버스 닫힘 애니메이션(720ms) 동안 wheel 차단
+    // → body/html 레이아웃 변경 없음 → filmStory 튀지 않음
+    document.addEventListener("wheel", handleExitWheel, { capture: true, passive: false });
     root.addEventListener("transitionend", onExitTransitionDone);
 
     root.classList.remove("active");
