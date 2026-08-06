@@ -123,10 +123,9 @@ export function initScenarioCanvas({ onReturnToGame }) {
 
   // ── 닫기 ─────────────────────────────────────────────────────────────────
   function onExitTransitionDone(e) {
-    // 닫힘 트랜지션(transform 720ms)이 끝나면 body 스크롤 복원
-    // → 그사이 맥 관성 이벤트 소멸
-    if (e.propertyName === "transform") {
-      document.body.style.overflow = "";
+    // transform(720ms) 또는 visibility 중 늦게 끝나는 것 기준으로 해제
+    if (e.propertyName === "transform" || e.propertyName === "visibility") {
+      document.documentElement.style.overflow = "";
       root.removeEventListener("transitionend", onExitTransitionDone);
     }
   }
@@ -135,14 +134,12 @@ export function initScenarioCanvas({ onReturnToGame }) {
     if (!root) return;
     openState = false;
 
-    // wheel 즉시 해제 (filmStory 충돌 방지)
     document.removeEventListener("wheel", handleWheel, true);
     window.clearTimeout(inertiaFlushTimer);
     peakDelta = 0;
 
-    // 닫힘 애니메이션 동안 body 스크롤 잠금
-    // → 맥 관성이 메인 페이지를 즉시 위로 날리지 못함
-    document.body.style.overflow = "hidden";
+    // html 요소 기준으로 스크롤 잠금 (body 기준은 맥 Chrome에서 무효)
+    document.documentElement.style.overflow = "hidden";
     root.addEventListener("transitionend", onExitTransitionDone);
 
     root.classList.remove("active");
