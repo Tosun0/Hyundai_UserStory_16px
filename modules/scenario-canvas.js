@@ -121,12 +121,10 @@ export function initScenarioCanvas({ onReturnToGame }) {
     document.addEventListener("wheel", handleWheel, { capture: true, passive: false });
   }
 
-  // ── 닫기: 레이아웃 변경 없이 wheel만 차단 ───────────────────────────────
-  function handleExitWheel(e) { if (e.deltaY < 0) e.preventDefault(); }
-
+  // ── 닫기: html overflow 잠금 (scrollbar-gutter:stable로 시프트 없음) ─────
   function onExitTransitionDone(e) {
     if (e.propertyName === "transform" || e.propertyName === "visibility") {
-      document.removeEventListener("wheel", handleExitWheel, true);
+      document.documentElement.style.overflow = "";
       root.removeEventListener("transitionend", onExitTransitionDone);
     }
   }
@@ -139,9 +137,9 @@ export function initScenarioCanvas({ onReturnToGame }) {
     window.clearTimeout(inertiaFlushTimer);
     peakDelta = 0;
 
-    // 캔버스 닫힘 애니메이션(720ms) 동안 wheel 차단
-    // → body/html 레이아웃 변경 없음 → filmStory 튀지 않음
-    document.addEventListener("wheel", handleExitWheel, { capture: true, passive: false });
+    // html overflow 잠금 → 닫힘 애니메이션(720ms) 동안 스크롤 차단
+    // scrollbar-gutter: stable 적용돼 있어 좌우 시프트 없음
+    document.documentElement.style.overflow = "hidden";
     root.addEventListener("transitionend", onExitTransitionDone);
 
     root.classList.remove("active");

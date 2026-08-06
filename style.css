@@ -341,13 +341,12 @@ html, body {
   overflow: hidden;
   z-index: 20;
   opacity: var(--film-story-visible, 0);
-  visibility: hidden;
   pointer-events: none;
   isolation: isolate;
 }
 
 .film-story.is-visible .film-story-stage {
-  visibility: visible;
+  pointer-events: none; /* 항상 none — 게임/버블만 인터랙션 */
 }
 
 .film-story-stage::before {
