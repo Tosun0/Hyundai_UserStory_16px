@@ -48,7 +48,8 @@ export function initScenarioCanvas({ onReturnToGame }) {
   function handleWheel(deltaY) {
     if (!openState) return false;
     window.clearTimeout(wheelUnlockTimer);
-    wheelUnlockTimer = window.setTimeout(() => { wheelLocked = false; }, 180);
+    // 500 ms covers the full macOS trackpad inertia decay tail.
+    wheelUnlockTimer = window.setTimeout(() => { wheelLocked = false; }, 500);
     if (wheelLocked || !deltaY) return true;
     wheelLocked = true;
     const direction = Math.sign(deltaY);
