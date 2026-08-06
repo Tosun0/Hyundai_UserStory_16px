@@ -45,12 +45,28 @@ export function initScenarioCanvas({ onReturnToGame }) {
     render();
   }
 
+
+  // ── 진입 잠금: transitionend 전까지 아래 스크롤 차단 ────────────────────
+  let isEntryLocked = false;
+
+  function onEntryTransitionDone(e) {
+    if (e.propertyName === "transform") {
+      isEntryLocked = false;
+      root.removeEventListener("transitionend", onEntryTransitionDone);
+    }
+  }
+
   // ── wheel 핸들러 (오버레이 전용, open 중에만 바인딩) ─────────────────────
   function handleWheel(event) {
     event.preventDefault();
 
     const absDelta = Math.abs(event.deltaY);
     if (!absDelta) return;
+
+    const direction = Math.sign(event.deltaY);
+
+    // 진입 애니메이션 중: 아래 방향만 차단, 위(닫기 방향)는 허용
+    if (isEntryLocked && direction > 0) return;
 
     // 80ms 침묵 후 peakDelta 리셋 (새 제스처 시작)
     window.clearTimeout(inertiaFlushTimer);
@@ -64,8 +80,6 @@ export function initScenarioCanvas({ onReturnToGame }) {
     const now = performance.now();
     if (now < cooldownUntil) return;
 
-    const direction = Math.sign(event.deltaY);
-
     if (direction < 0 && index === 0) {
       // 가상 스페이서: 누적 위 방향 스크롤이 임계값을 넘으면 닫힘
       closeAccum += absDelta;
@@ -76,7 +90,6 @@ export function initScenarioCanvas({ onReturnToGame }) {
         closeAccum = 0;
         close();
       }
-      // 임계값 미달이면 쿨다운 없이 리턴 (계속 누적 가능)
       return;
     }
 
@@ -93,6 +106,11 @@ export function initScenarioCanvas({ onReturnToGame }) {
     peakDelta = 0;
     cooldownUntil = 0;
     closeAccum = 0;
+
+    // 진입 잠금: transform 트랜지션 완료 전까지 아래 스크롤 차단
+    isEntryLocked = true;
+    root.addEventListener("transitionend", onEntryTransitionDone);
+
     render();
     root.classList.add("active");
     root.setAttribute("aria-hidden", "false");
