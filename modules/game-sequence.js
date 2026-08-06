@@ -38,7 +38,6 @@ export function initGameSequence({ onComplete }) {
     document.body.classList.toggle("game-entering", ratio > .01);
     document.body.classList.toggle("game-active", active);
     document.body.classList.toggle("game-chrome-hidden", ratio >= .9);
-    document.body.style.setProperty("--game-chrome-opacity", Math.min(Math.max((.9 - ratio) / .2, 0), 1).toFixed(3));
     syncVisibility(active);
   }, { threshold: [0, .01, .5, .9, .995, 1] });
 

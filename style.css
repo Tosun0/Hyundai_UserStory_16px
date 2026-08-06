@@ -67,7 +67,8 @@ html, body {
   left: 0;
   width: 100%; z-index: 100;
   display: flex;
-  opacity: var(--game-chrome-opacity, 1);
+  opacity: 1;
+  transition: opacity 420ms ease;
   justify-content: space-between;
   align-items: flex-start;
   padding: 0 clamp(24px, 2.35vw, 48px);
@@ -665,8 +666,10 @@ html, body {
   height: clamp(110px, 24vh, 270px);
   background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.18) 35%, rgba(0,0,0,.72) 100%);
   pointer-events: none;
-  opacity: var(--game-chrome-opacity, 1);
+  opacity: 1;
+  transition: opacity 420ms ease;
 }
+
 
 /* ==========================================================================
    SQ08 — INTEGRATED MINI GAME
@@ -729,7 +732,9 @@ html, body {
   transform: translateY(-8px);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  transition: opacity .3s ease, transform .3s ease, background .2s ease;
+  /* visibility 딜레이: opacity exit(300ms) 끝난 뒤 hidden */
+  transition: opacity .3s ease, transform .4s cubic-bezier(.16,1,.3,1),
+              background .2s ease, visibility 0s linear .3s;
 }
 
 body.game-active .game-skip-button {
@@ -737,6 +742,9 @@ body.game-active .game-skip-button {
   visibility: visible;
   pointer-events: auto;
   transform: translateY(0);
+  /* 진입: visibility 즉시, opacity/transform 트랜지션 */
+  transition: opacity .3s ease, transform .4s cubic-bezier(.16,1,.3,1),
+              background .2s ease, visibility 0s linear 0s;
 }
 
 .game-skip-button:hover {
@@ -746,7 +754,7 @@ body.game-active .game-skip-button {
 .top-header,
 .bottom-gradient,
 .scroll-prompt {
-  transition: opacity 420ms ease, visibility 420ms ease;
+  transition: opacity 420ms ease, visibility 0s linear 420ms;
 }
 
 body.game-chrome-hidden .top-header,
@@ -755,6 +763,7 @@ body.game-chrome-hidden .scroll-prompt {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
+  transition: opacity 420ms ease, visibility 0s linear 0s;
 }
 
 @media (max-width: 768px) {
