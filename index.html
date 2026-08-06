@@ -131,40 +131,36 @@
     <section id="sq08" class="game-sequence" aria-label="반응 속도 게임">
       <iframe class="game-frame" src="Asset/Playbook/_Game/Game.html?v=20260805-small-wheel-r1" title="야간 주행 반응 속도 체험"></iframe>
     </section>
-
-    <!-- 시나리오 캔버스: fixed 오버레이 → 네이티브 scroll-snap 섹션 -->
-    <section class="canvas-snap-section" data-canvas-index="0" aria-label="시나리오 캔버스 1">
-      <img src="Asset/ScenarioCanvas/3_ScenarioCanvas_01.jpg" alt="시나리오 캔버스 1">
-    </section>
-    <section class="canvas-snap-section" data-canvas-index="1" aria-label="시나리오 캔버스 2">
-      <img src="Asset/ScenarioCanvas/3_ScenarioCanvas_02.jpg" alt="시나리오 캔버스 2">
-    </section>
-    <section class="canvas-snap-section" data-canvas-index="2" aria-label="시나리오 캔버스 3">
-      <img src="Asset/ScenarioCanvas/3_ScenarioCanvas_03.jpg" alt="시나리오 캔버스 3">
-    </section>
-    <section class="canvas-snap-section" data-canvas-index="3" aria-label="시나리오 캔버스 4">
-      <img src="Asset/ScenarioCanvas/3_ScenarioCanvas_04.jpg" alt="시나리오 캔버스 4">
-    </section>
-    <section class="canvas-snap-section" data-canvas-index="4" aria-label="시나리오 캔버스 5">
-      <img src="Asset/ScenarioCanvas/3_ScenarioCanvas_05.jpg" alt="시나리오 캔버스 5">
-    </section>
   </main>
 
   <button id="gameSkipButton" class="game-skip-button" type="button">게임 건너뛰기</button>
   <div class="bottom-gradient" aria-hidden="true"></div>
 
-  <!-- 고정 인디케이터 (캔버스 구간에서만 표시) -->
-  <div id="scenarioIndicator" class="canvas-pagination" aria-label="시나리오 캔버스 페이지">
-    <div class="pagination-dots">
-      <button class="p-dot active" type="button" data-index="0" aria-label="1페이지"></button>
-      <button class="p-dot" type="button" data-index="1" aria-label="2페이지"></button>
-      <button class="p-dot" type="button" data-index="2" aria-label="3페이지"></button>
-      <button class="p-dot" type="button" data-index="3" aria-label="4페이지"></button>
-      <button class="p-dot" type="button" data-index="4" aria-label="5페이지"></button>
+  <!--
+    시나리오 캔버스: position fixed 오버레이 유지.
+    내부에 .canvas-scroll-container 를 두어 네이티브 scroll-snap 처리.
+    wheel 이벤트 JS 개입 없음 — 브라우저가 관성 포함 스크롤 전담.
+  -->
+  <section id="scenarioCanvas" class="scenario-canvas-stage" aria-label="시나리오 캔버스" aria-hidden="true">
+    <div class="canvas-scroll-container">
+      <div class="canvas-slide"><img src="Asset/ScenarioCanvas/3_ScenarioCanvas_01.jpg" alt="시나리오 캔버스 1"></div>
+      <div class="canvas-slide"><img src="Asset/ScenarioCanvas/3_ScenarioCanvas_02.jpg" alt="시나리오 캔버스 2"></div>
+      <div class="canvas-slide"><img src="Asset/ScenarioCanvas/3_ScenarioCanvas_03.jpg" alt="시나리오 캔버스 3"></div>
+      <div class="canvas-slide"><img src="Asset/ScenarioCanvas/3_ScenarioCanvas_04.jpg" alt="시나리오 캔버스 4"></div>
+      <div class="canvas-slide"><img src="Asset/ScenarioCanvas/3_ScenarioCanvas_05.jpg" alt="시나리오 캔버스 5"></div>
     </div>
-    <span id="scenarioCounter" class="pagination-text">01 / 05</span>
-  </div>
+    <div class="canvas-pagination" id="scenarioIndicator">
+      <div class="pagination-dots">
+        <button class="p-dot active" type="button" data-index="0" aria-label="1페이지"></button>
+        <button class="p-dot" type="button" data-index="1" aria-label="2페이지"></button>
+        <button class="p-dot" type="button" data-index="2" aria-label="3페이지"></button>
+        <button class="p-dot" type="button" data-index="3" aria-label="4페이지"></button>
+        <button class="p-dot" type="button" data-index="4" aria-label="5페이지"></button>
+      </div>
+      <span id="scenarioCounter" class="pagination-text">01 / 05</span>
+    </div>
+  </section>
 
-  <script type="module" src="app.js?v=20260806-native-scroll-r1"></script>
+  <script type="module" src="app.js?v=20260806-overlay-native-r1"></script>
 </body>
 </html>
