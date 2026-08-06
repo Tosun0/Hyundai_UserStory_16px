@@ -44,7 +44,7 @@
   </header>
 
   <main>
-    <section id="sq01" class="sequence--intro" aria-label="인트로">
+    <section id="sq01" class="sequence--intro" data-section="cover" aria-label="인트로">
       <div id="vhsCassette" class="vhs-stage-wrapper">
         <div class="film-strip-background">
           <img class="film-strip-img" src="Asset/Playbook/_Screen/T_VideoFilm.png" alt="" draggable="false">
@@ -67,7 +67,7 @@
       </button>
     </section>
 
-    <section id="filmStory" class="film-story scroll-sequences" aria-label="운전 시나리오">
+    <section id="filmStory" class="film-story scroll-sequences" data-section="playbook" aria-label="운전 시나리오">
       <div class="film-story-stage">
         <div class="shared-film-viewport">
           <div class="shared-film">
@@ -130,7 +130,7 @@
     내부에 .canvas-scroll-container 를 두어 네이티브 scroll-snap 처리.
     wheel 이벤트 JS 개입 없음 — 브라우저가 관성 포함 스크롤 전담.
   -->
-  <section id="scenarioCanvas" class="scenario-canvas-stage" aria-label="시나리오 캔버스" aria-hidden="true">
+  <section id="scenarioCanvas" class="scenario-canvas-stage" data-section="canvas" aria-label="시나리오 캔버스" aria-hidden="true">
     <div class="canvas-track" id="scenarioTrack">
       <div class="canvas-slide"><img src="Asset/ScenarioCanvas/3_ScenarioCanvas_01.jpg" alt="시나리오 캔버스 1"></div>
       <div class="canvas-slide"><img src="Asset/ScenarioCanvas/3_ScenarioCanvas_02.jpg" alt="시나리오 캔버스 2"></div>
