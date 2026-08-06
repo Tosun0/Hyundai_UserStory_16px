@@ -19,10 +19,15 @@ export function initScenarioCanvas({ onReturnToGame }) {
   let openState  = false;
 
   // ── 맥 관성 필터 상태 ────────────────────────────────────────────────────
-  let peakDelta       = 0;
+  let peakDelta        = 0;
   let inertiaFlushTimer;
-  let cooldownUntil   = 0;        // performance.now() 기준
-  const COOLDOWN_MS   = 500;
+  let cooldownUntil    = 0;
+  const COOLDOWN_MS    = 500;
+
+  // ── 가상 스페이서: 첫 슬라이드에서 위로 스크롤 시 누적 임계값 초과해야 닫힘 ──
+  let closeAccum       = 0;       // 누적 위 방향 deltaY
+  let closeResetTimer;
+  const CLOSE_THRESHOLD = 300;   // 이 픽셀 이상 위로 스크롤해야 닫힘
 
   // ── 렌더 ─────────────────────────────────────────────────────────────────
   function render() {
@@ -36,6 +41,7 @@ export function initScenarioCanvas({ onReturnToGame }) {
 
   function move(direction) {
     index = Math.max(0, Math.min(index + direction, total - 1));
+    closeAccum = 0; // 슬라이드 이동 시 누적 리셋
     render();
   }
 
@@ -61,11 +67,21 @@ export function initScenarioCanvas({ onReturnToGame }) {
     const direction = Math.sign(event.deltaY);
 
     if (direction < 0 && index === 0) {
-      close();
-    } else {
-      move(direction);
+      // 가상 스페이서: 누적 위 방향 스크롤이 임계값을 넘으면 닫힘
+      closeAccum += absDelta;
+      window.clearTimeout(closeResetTimer);
+      closeResetTimer = window.setTimeout(() => { closeAccum = 0; }, 400);
+
+      if (closeAccum >= CLOSE_THRESHOLD) {
+        closeAccum = 0;
+        close();
+      }
+      // 임계값 미달이면 쿨다운 없이 리턴 (계속 누적 가능)
+      return;
     }
 
+    closeAccum = 0;
+    move(direction);
     cooldownUntil = now + COOLDOWN_MS;
   }
 
@@ -76,6 +92,7 @@ export function initScenarioCanvas({ onReturnToGame }) {
     index = 0;
     peakDelta = 0;
     cooldownUntil = 0;
+    closeAccum = 0;
     render();
     root.classList.add("active");
     root.setAttribute("aria-hidden", "false");
