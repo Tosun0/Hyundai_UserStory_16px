@@ -60,7 +60,7 @@ assert.match(scenarioModule, /root\.classList\.add\("closing"\)/);
 assert.match(style, /\.scenario-canvas-stage\.closing/);
 assert.match(game, /canvas-playbook:game-scroll-up/);
 assert.match(scrollRouter, /onWheel\?\.\(event\.deltaY\)/);
-assert.match(style, /transition: transform \.8s cubic-bezier\(\.22, \.8, \.25, 1\)/);
+assert.doesNotMatch(style, /\.shared-film[\s\S]*?transition: transform \.8s/);
 assert.match(scenarioModule, /clearTimeout\(inertiaFlushTimer\)/);
 assert.match(scenarioModule, /setTimeout\(\(\) => \{ peakDelta = 0; \}, 80\)/);
 assert.equal(shouldAdvanceToGame({ sequence: 7, step: 2, direction: 1, locked: false }), true);
