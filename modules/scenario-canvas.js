@@ -17,6 +17,8 @@ export function initScenarioCanvas({ onReturnToGame }) {
 
   let index      = 0;
   let openState  = false;
+  let closingState = false;
+  let scrollbarWidth = 0;
 
   // ── 맥 관성 필터 상태 ────────────────────────────────────────────────────
   let peakDelta        = 0;
@@ -28,8 +30,9 @@ export function initScenarioCanvas({ onReturnToGame }) {
   let closeAccum       = 0;       // 누적 위 방향 deltaY
   let closeResetTimer;
   const EXIT_TRANSITION_MS = 760;
+  const EXIT_IDLE_MS = 180;
   let exitUnlockTimer;
-  let returnToGameTimer;
+  let exitStartedAt = 0;
   const CLOSE_THRESHOLD = 300;   // 이 픽셀 이상 위로 스크롤해야 닫힘
 
   // ── 렌더 ─────────────────────────────────────────────────────────────────
@@ -104,7 +107,13 @@ export function initScenarioCanvas({ onReturnToGame }) {
   // ── 열기 ─────────────────────────────────────────────────────────────────
   function open() {
     if (!root) return;
+    window.clearTimeout(exitUnlockTimer);
+    document.removeEventListener("wheel", handleExitWheel, true);
+    document.documentElement.classList.remove("scenario-exit-lock");
+    document.body.style.paddingRight = "";
+    closingState = false;
     openState = true;
+    scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
     index = 0;
     peakDelta = 0;
     cooldownUntil = 0;
@@ -125,41 +134,45 @@ export function initScenarioCanvas({ onReturnToGame }) {
   }
 
   // ── 닫기: 레이아웃 무변경, wheel만 차단 ─────────────────────────────────
-  function handleExitWheel(e) { e.preventDefault(); }
-
-  function releaseExitLock() {
+  function finishExit() {
     window.clearTimeout(exitUnlockTimer);
     document.removeEventListener("wheel", handleExitWheel, true);
-    root.removeEventListener("transitionend", onExitTransitionDone);
+    onReturnToGame();
+    closingState = false;
+    document.documentElement.classList.remove("scenario-exit-lock");
+    document.body.style.paddingRight = "";
   }
 
-  function onExitTransitionDone(e) {
-    if (e.target !== root) return;
-    if (e.propertyName !== "transform" && e.propertyName !== "visibility") return;
-    releaseExitLock();
+  function scheduleExitUnlock() {
+    window.clearTimeout(exitUnlockTimer);
+    const remaining = Math.max(0, EXIT_TRANSITION_MS - (performance.now() - exitStartedAt));
+    exitUnlockTimer = window.setTimeout(finishExit, Math.max(EXIT_IDLE_MS, remaining));
+  }
+
+  function handleExitWheel(e) {
+    e.preventDefault();
+    scheduleExitUnlock();
   }
 
   function close() {
-    if (!root) return;
+    if (!root || !openState) return;
     openState = false;
+    closingState = true;
+    exitStartedAt = performance.now();
 
     document.removeEventListener("wheel", handleWheel, true);
     window.clearTimeout(inertiaFlushTimer);
-    window.clearTimeout(returnToGameTimer);
     peakDelta = 0;
 
-    // 닫힘 트랜지션(720ms) 동안 wheel 차단 → 레이아웃/스크롤바 변경 없음
+    document.documentElement.classList.add("scenario-exit-lock");
+    if (scrollbarWidth > 0) document.body.style.paddingRight = `${scrollbarWidth}px`;
     document.addEventListener("wheel", handleExitWheel, { capture: true, passive: false });
-    root.addEventListener("transitionend", onExitTransitionDone);
 
     root.classList.remove("active");
     root.setAttribute("aria-hidden", "true");
     document.documentElement.classList.remove("scenario-open");
     back?.setAttribute("aria-label", backLabel);
-    returnToGameTimer = window.setTimeout(() => {
-      if (!openState) onReturnToGame();
-    }, EXIT_TRANSITION_MS);
-    exitUnlockTimer = window.setTimeout(releaseExitLock, EXIT_TRANSITION_MS + 80);
+    scheduleExitUnlock();
   }
 
   // ── 인디케이터 점 클릭 ───────────────────────────────────────────────────
@@ -198,6 +211,6 @@ export function initScenarioCanvas({ onReturnToGame }) {
   return {
     open,
     close,
-    isOpen: () => openState,
+    isOpen: () => openState || closingState,
   };
 }

@@ -1636,7 +1636,8 @@ body.game-chrome-hidden .scroll-prompt {
   letter-spacing: -.4px;
 }
 
-.scenario-open {
+.scenario-open,
+.scenario-exit-lock {
   overflow: hidden;
 }
 
