@@ -27,6 +27,9 @@ export function initScenarioCanvas({ onReturnToGame }) {
   // ── 가상 스페이서: 첫 슬라이드에서 위로 스크롤 시 누적 임계값 초과해야 닫힘 ──
   let closeAccum       = 0;       // 누적 위 방향 deltaY
   let closeResetTimer;
+  const EXIT_TRANSITION_MS = 760;
+  let exitUnlockTimer;
+  let returnToGameTimer;
   const CLOSE_THRESHOLD = 300;   // 이 픽셀 이상 위로 스크롤해야 닫힘
 
   // ── 렌더 ─────────────────────────────────────────────────────────────────
@@ -124,11 +127,16 @@ export function initScenarioCanvas({ onReturnToGame }) {
   // ── 닫기: 레이아웃 무변경, wheel만 차단 ─────────────────────────────────
   function handleExitWheel(e) { e.preventDefault(); }
 
+  function releaseExitLock() {
+    window.clearTimeout(exitUnlockTimer);
+    document.removeEventListener("wheel", handleExitWheel, true);
+    root.removeEventListener("transitionend", onExitTransitionDone);
+  }
+
   function onExitTransitionDone(e) {
-    if (e.propertyName === "transform" || e.propertyName === "visibility") {
-      document.removeEventListener("wheel", handleExitWheel, true);
-      root.removeEventListener("transitionend", onExitTransitionDone);
-    }
+    if (e.target !== root) return;
+    if (e.propertyName !== "transform" && e.propertyName !== "visibility") return;
+    releaseExitLock();
   }
 
   function close() {
@@ -137,6 +145,7 @@ export function initScenarioCanvas({ onReturnToGame }) {
 
     document.removeEventListener("wheel", handleWheel, true);
     window.clearTimeout(inertiaFlushTimer);
+    window.clearTimeout(returnToGameTimer);
     peakDelta = 0;
 
     // 닫힘 트랜지션(720ms) 동안 wheel 차단 → 레이아웃/스크롤바 변경 없음
@@ -147,7 +156,10 @@ export function initScenarioCanvas({ onReturnToGame }) {
     root.setAttribute("aria-hidden", "true");
     document.documentElement.classList.remove("scenario-open");
     back?.setAttribute("aria-label", backLabel);
-    onReturnToGame();
+    returnToGameTimer = window.setTimeout(() => {
+      if (!openState) onReturnToGame();
+    }, EXIT_TRANSITION_MS);
+    exitUnlockTimer = window.setTimeout(releaseExitLock, EXIT_TRANSITION_MS + 80);
   }
 
   // ── 인디케이터 점 클릭 ───────────────────────────────────────────────────
