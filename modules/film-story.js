@@ -93,8 +93,11 @@ export function initFilmStory() {
     const easedFollow = follow * follow * (3 - (2 * follow));
     film.style.transform = `translate3d(-50%, ${(viewport.clientHeight / 2) - windowCenter + ((1 - easedFollow) * viewHeight * 1.08)}px, 0)`;
     windows.forEach((windowElement) => {
-      const isCurrent = Number(windowElement.dataset.sequence) === sequence;
-      [...windowElement.querySelectorAll("img")].forEach((image, index) => image.classList.toggle("is-active", isCurrent && index === step));
+      if (Number(windowElement.dataset.sequence) === sequence) {
+        windowElement.dataset.activeStep = String(step);
+      }
+      const visibleStep = Number(windowElement.dataset.activeStep || 0);
+      [...windowElement.querySelectorAll("img")].forEach((image, index) => image.classList.toggle("is-active", index === visibleStep));
     });
 
     const state = `${sequence}-${step}`;

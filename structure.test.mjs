@@ -11,6 +11,7 @@ const app = await readFile(resolve(root, "app.js"), "utf8");
 const game = await readFile(resolve(root, "Asset/Playbook/_Game/Game.html"), "utf8");
 const gameModule = await readFile(resolve(root, "modules/game-sequence.js"), "utf8");
 const scenarioModule = await readFile(resolve(root, "modules/scenario-canvas.js"), "utf8");
+const filmModule = await readFile(resolve(root, "modules/film-story.js"), "utf8");
 const style = await readFile(resolve(root, "style.css"), "utf8");
 
 assert.match(html, /id="sq01"/);
@@ -33,6 +34,9 @@ assert.match(gameModule, /canvas-playbook:game-reset/);
 assert.match(gameModule, /type === "canvas-playbook:scenario-open"/);
 assert.match(gameModule, /type === "canvas-playbook:game-complete" && root\.classList\.contains\("is-active"\)/);
 assert.match(scenarioModule, /onReturnToGame\(\)/);
+assert.match(filmModule, /windowElement\.dataset\.activeStep = String\(step\)/);
+assert.match(filmModule, /const visibleStep = Number\(windowElement\.dataset\.activeStep \|\| 0\)/);
+assert.doesNotMatch(filmModule, /isCurrent && index === step/);
 assert.match(scenarioModule, /clearTimeout\(wheelUnlockTimer\)/);
 assert.match(scenarioModule, /setTimeout\(\(\) => \{ wheelLocked = false; \}, 180\)/);
 assert.equal(shouldAdvanceToGame({ sequence: 7, step: 2, direction: 1, locked: false }), true);
