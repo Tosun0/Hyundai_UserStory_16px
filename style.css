@@ -681,7 +681,8 @@ html, body {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transition: opacity .46s ease, visibility 0s linear .46s;
+  /* z-index 0s linear .46s: opacity 페이드아웃 끝난 뒤에 z-index 복귀 */
+  transition: opacity .46s ease, visibility 0s linear .46s, z-index 0s linear .46s;
 }
 
 .game-sequence.is-entering {
@@ -689,14 +690,14 @@ html, body {
   opacity: 1;
   visibility: visible;
   pointer-events: none;
-  transition: opacity .46s ease, visibility 0s linear 0s;
+  transition: opacity .46s ease, visibility 0s linear 0s, z-index 0s linear 0s;
 }
 
 .game-sequence.is-active {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
-  transition: opacity .46s ease, visibility 0s linear 0s;
+  transition: opacity .46s ease, visibility 0s linear 0s, z-index 0s linear 0s;
 }
 
 .game-frame {
