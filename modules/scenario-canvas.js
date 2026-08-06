@@ -123,9 +123,9 @@ export function initScenarioCanvas({ onReturnToGame }) {
 
   // ── 닫기 ─────────────────────────────────────────────────────────────────
   function onExitTransitionDone(e) {
-    // transform(720ms) 또는 visibility 중 늦게 끝나는 것 기준으로 해제
     if (e.propertyName === "transform" || e.propertyName === "visibility") {
       document.documentElement.style.overflow = "";
+      document.documentElement.style.paddingRight = "";
       root.removeEventListener("transitionend", onExitTransitionDone);
     }
   }
@@ -138,7 +138,9 @@ export function initScenarioCanvas({ onReturnToGame }) {
     window.clearTimeout(inertiaFlushTimer);
     peakDelta = 0;
 
-    // html 요소 기준으로 스크롤 잠금 (body 기준은 맥 Chrome에서 무효)
+    // 스크롤바 너비 보정 후 overflow 잠금 → 좌우 레이아웃 흔들림 방지
+    const scrollbarW = window.innerWidth - document.documentElement.clientWidth;
+    document.documentElement.style.paddingRight = `${scrollbarW}px`;
     document.documentElement.style.overflow = "hidden";
     root.addEventListener("transitionend", onExitTransitionDone);
 
