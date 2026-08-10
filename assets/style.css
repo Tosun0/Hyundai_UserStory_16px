@@ -284,8 +284,8 @@ html, body {
   isolation: isolate;
 }
 
-.playbook-title {
-  position: absolute;
+.global-playbook-title {
+  position: fixed;
   z-index: 60;
   top: 32px;
   left: 50%;
@@ -304,10 +304,18 @@ html, body {
   transform: translateX(-50%);
   backdrop-filter: blur(16px);
   pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 320ms ease, visibility 320ms ease;
+}
+
+.global-playbook-title.is-visible {
+  opacity: 1;
+  visibility: visible;
 }
 
 @media (max-width: 720px) {
-  .playbook-title {
+  .global-playbook-title {
     top: max(12px, env(safe-area-inset-top));
     max-width: calc(100vw - 24px);
     padding: 8px 16px;

@@ -25,7 +25,14 @@ gameSequence = initGameSequence({
   getReturnScrollY: filmStory.getGameReturnY,
 });
 
+function syncGlobalTitle(scrollY = window.scrollY) {
+  const playbook = document.querySelector("#playbook");
+  const title = document.querySelector("#global-playbook-title");
+  title?.classList.toggle("is-visible", !!playbook && scrollY >= playbook.offsetTop);
+}
+
 function renderScroll() {
+  syncGlobalTitle();
   // 시나리오 캔버스가 열려 있으면 메인 스크롤 업데이트 불필요
   scenarioCanvas.update(window.scrollY);
   if (scenarioCanvas.isOpen()) return;
