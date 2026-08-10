@@ -52,7 +52,7 @@ html, body {
 .sequence--intro {
   position: relative;
   width: 100vw;
-  height: calc(2 * 100vh);
+  height: 100vh;
 }
 
 /* sticky 뷰포트 고정 컨테이너 */
