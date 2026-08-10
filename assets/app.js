@@ -34,18 +34,19 @@ function renderScroll() {
   filmStory.update(y);
 }
 
-function snapSectionBoundary() {
+function snapSectionBoundary(direction) {
+  if (!direction) return;
   const scrollY = window.scrollY;
   const threshold = Math.min(window.innerHeight * 0.65, 520);
-  const targets = ["#sq08", "#scenario-canvas"]
+  const targets = ["#cover", "#playbook", "#sq08", "#scenario-canvas"]
     .map((selector) => document.querySelector(selector)?.offsetTop)
     .filter((top) => Number.isFinite(top));
-  const target = targets.reduce((closest, top) => {
-    if (Math.abs(top - scrollY) > threshold) return closest;
-    return closest === null || Math.abs(top - scrollY) < Math.abs(closest - scrollY) ? top : closest;
-  }, null);
+  const nextTargets = targets
+    .filter((top) => direction > 0 ? top > scrollY : top < scrollY)
+    .sort((first, second) => direction > 0 ? first - second : second - first);
+  const target = nextTargets[0] ?? null;
 
-  if (target === null || Math.abs(target - scrollY) < 1) return;
+  if (target === null || Math.abs(target - scrollY) > threshold) return;
   window.scrollTo({ top: target, behavior: "smooth" });
 }
 

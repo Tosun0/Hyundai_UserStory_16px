@@ -6,22 +6,30 @@
  */
 export function initScrollRouter({ onScroll, onScrollEnd }) {
   let fallbackTimer;
+  let previousScrollY = window.scrollY;
+  let scrollDirection = 0;
   const handleScroll = () => {
+    const currentScrollY = window.scrollY;
+    if (currentScrollY !== previousScrollY) {
+      scrollDirection = Math.sign(currentScrollY - previousScrollY);
+      previousScrollY = currentScrollY;
+    }
     onScroll();
     if (!onScrollEnd || "onscrollend" in window) return;
     window.clearTimeout(fallbackTimer);
-    fallbackTimer = window.setTimeout(onScrollEnd, 140);
+    fallbackTimer = window.setTimeout(() => onScrollEnd(scrollDirection), 140);
   };
+  const handleScrollEnd = () => onScrollEnd(scrollDirection);
 
   window.addEventListener("scroll", handleScroll, { passive: true });
   if (onScrollEnd && "onscrollend" in window) {
-    window.addEventListener("scrollend", onScrollEnd, { passive: true });
+    window.addEventListener("scrollend", handleScrollEnd, { passive: true });
   }
   onScroll();
 
   return () => {
     window.removeEventListener("scroll", handleScroll);
-    window.removeEventListener("scrollend", onScrollEnd);
+    window.removeEventListener("scrollend", handleScrollEnd);
     window.clearTimeout(fallbackTimer);
   };
 }
