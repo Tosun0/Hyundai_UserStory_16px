@@ -1572,6 +1572,7 @@ body.game-chrome-hidden .scroll-prompt {
    ────────────────────────────────────────────── */
 .scenario-canvas-stage {
   position: relative;
+  scroll-snap-align: start;
   height: calc(6 * 100vh); /* 5 슬라이드 × 스크롤 소비 공간 */
   background: #0a0e17;
 }
