@@ -28,7 +28,8 @@ gameSequence = initGameSequence({
 function syncGlobalTitle(scrollY = window.scrollY) {
   const playbook = document.querySelector("#playbook");
   const title = document.querySelector("#global-playbook-title");
-  title?.classList.toggle("is-visible", !!playbook && scrollY >= playbook.offsetTop);
+  const revealY = playbook ? playbook.offsetTop - window.innerHeight * 0.5 : 0;
+  title?.classList.toggle("is-visible", !!playbook && scrollY >= revealY);
 }
 
 function renderScroll() {
