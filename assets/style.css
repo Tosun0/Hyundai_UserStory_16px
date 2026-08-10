@@ -28,6 +28,7 @@ html, body {
   font-family: var(--font-sans);
   overflow-x: clip;
   scroll-behavior: smooth;
+  scroll-snap-type: y proximity;
 }
 
 .visual-filters {
@@ -613,6 +614,7 @@ html, body {
    ========================================================================== */
 .game-sequence {
   position: relative;
+  scroll-snap-align: start;
   z-index: 10;
   width: 100%;
   height: 100vh;
