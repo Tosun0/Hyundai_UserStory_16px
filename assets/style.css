@@ -52,7 +52,7 @@ html, body {
 .sequence--intro {
   position: relative;
   width: 100vw;
-  height: calc(4 * 100vh);
+  height: calc(2 * 100vh);
 }
 
 /* sticky 뷰포트 고정 컨테이너 */
@@ -265,6 +265,7 @@ html, body {
    ========================================================================== */
 .film-story {
   position: relative;
+  scroll-snap-align: start;
   z-index: 15;
 }
 

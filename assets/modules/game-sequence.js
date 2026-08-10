@@ -26,7 +26,10 @@ export function initGameSequence({ onComplete, getReturnScrollY }) {
   const returnToFilm = () => {
     if (filmReturnLocked) return;
     filmReturnLocked = true;
-    window.scrollTo({ top: getReturnScrollY(), behavior: "smooth" });
+    const savedReturnY = getReturnScrollY?.() ?? 0;
+    const fallbackReturnY = Math.max(0, root.offsetTop - window.innerHeight);
+    const returnY = savedReturnY > 0 ? savedReturnY : fallbackReturnY;
+    window.scrollTo({ top: returnY, behavior: "smooth" });
     window.setTimeout(() => { filmReturnLocked = false; }, 900);
   };
 
