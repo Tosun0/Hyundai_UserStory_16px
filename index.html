@@ -26,26 +26,28 @@
 
   <main>
     <section id="cover" class="page-section sequence--intro" aria-label="인트로">
-      <div id="vhsCassette" class="vhs-stage-wrapper">
-        <div class="film-strip-background">
-          <img class="film-strip-img" src="assets/Playbook/_Screen/T_VideoFilm.png" alt="" draggable="false">
-        </div>
-        <div class="vhs-cassette-frame">
-          <img class="vhs-body-img" src="assets/Playbook/_Screen/T_Video.png" alt="VHS 플레이어" draggable="false">
-          <div class="vhs-screen-window">
-            <div id="frame1" class="story-frame active"><img class="screen-content-img" src="assets/Playbook/_Story/Cover/T_Concern_02.png" alt="운전을 고민하는 아버지"></div>
-            <div id="frame2" class="story-frame"><img class="screen-content-img" src="assets/Playbook/_Story/Cover/T_Concern_02.png" alt="운전을 고민하는 아버지"></div>
-            <div id="frame3" class="story-frame"><img class="screen-content-img" src="assets/Playbook/_Story/Cover/T_Concern_02.png" alt="운전을 고민하는 아버지"></div>
+      <div class="vhs-sticky">
+        <div id="vhsCassette" class="vhs-stage-wrapper">
+          <div class="film-strip-background">
+            <img class="film-strip-img" src="assets/Playbook/_Screen/T_VideoFilm.png" alt="" draggable="false">
           </div>
-          <div class="vhs-label-title">고령 운전자의 하루, <span>원점으로</span> 돌아오다.</div>
-          <p id="noteText" class="vhs-orange-note">일정은 똑같은데, 대중교통은 힘들고...<br>어쩔 수 없지만 운전은 해야겠어.</p>
-          <div id="glitchOverlay" class="glitch-overlay" aria-hidden="true"></div>
+          <div class="vhs-cassette-frame">
+            <img class="vhs-body-img" src="assets/Playbook/_Screen/T_Video.png" alt="VHS 플레이어" draggable="false">
+            <div class="vhs-screen-window">
+              <div id="frame1" class="story-frame active"><img class="screen-content-img" src="assets/Playbook/_Story/Cover/T_Concern_02.png" alt="운전을 고민하는 아버지"></div>
+              <div id="frame2" class="story-frame"><img class="screen-content-img" src="assets/Playbook/_Story/Cover/T_Concern_02.png" alt="운전을 고민하는 아버지"></div>
+              <div id="frame3" class="story-frame"><img class="screen-content-img" src="assets/Playbook/_Story/Cover/T_Concern_02.png" alt="운전을 고민하는 아버지"></div>
+            </div>
+            <div class="vhs-label-title">고령 운전자의 하루, <span>원점으로</span> 돌아오다.</div>
+            <p id="noteText" class="vhs-orange-note">일정은 똑같은데, 대중교통은 힘들고...<br>어쩔 수 없지만 운전은 해야겠어.</p>
+            <div id="glitchOverlay" class="glitch-overlay" aria-hidden="true"></div>
+          </div>
         </div>
+        <button id="scrollPrompt" class="scroll-prompt" type="button">
+          <span class="scroll-text">스크롤해서 이야기를 확인해 보세요</span>
+          <span class="scroll-arrow" aria-hidden="true">⌄</span>
+        </button>
       </div>
-      <button id="scrollPrompt" class="scroll-prompt" type="button">
-        <span class="scroll-text">스크롤해서 이야기를 확인해 보세요</span>
-        <span class="scroll-arrow" aria-hidden="true">⌄</span>
-      </button>
     </section>
 
     <section id="playbook" class="page-section film-story scroll-sequences" aria-label="운전 시나리오">

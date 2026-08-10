@@ -47,15 +47,23 @@ html, body {
 /* ==========================================================================
    PAGE 01 VIEW
    ========================================================================== */
+/* §5.2: scroll-consuming 구간 — VHS 프레임이 스크롤 내부에서 전환 */
 .sequence--intro {
   position: relative;
   width: 100vw;
+  height: calc(4 * 100vh);
+}
+
+/* sticky 뷰포트 고정 컨테이너 */
+.vhs-sticky {
+  position: sticky;
+  top: 0;
   height: 100vh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
 }
 
 
@@ -259,9 +267,11 @@ html, body {
   z-index: 15;
 }
 
+/* §5.2: fixed 오버레이 → sticky (섹션 내부 고정) */
 .film-story-stage {
-  position: fixed;
-  inset: 0;
+  position: sticky;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100vh;
   overflow: hidden;
