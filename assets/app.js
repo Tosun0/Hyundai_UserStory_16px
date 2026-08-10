@@ -25,11 +25,9 @@ gameSequence = initGameSequence({
   getReturnScrollY: filmStory.getGameReturnY,
 });
 
-function syncGlobalTitle(scrollY = window.scrollY) {
-  const playbook = document.querySelector("#playbook");
+function syncGlobalTitle() {
   const title = document.querySelector("#global-playbook-title");
-  const revealY = playbook ? playbook.offsetTop - window.innerHeight * 0.5 : 0;
-  title?.classList.toggle("is-visible", !!playbook && scrollY >= revealY);
+  title?.classList.add("is-visible");
 }
 
 function renderScroll() {
