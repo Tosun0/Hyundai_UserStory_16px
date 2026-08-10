@@ -1,214 +1,90 @@
 /**
- * scenario-canvas.js (16px)
+ * scenario-canvas.js (16px) — sticky-scroll 방식
  *
- * fixed 오버레이 유지. 슬라이드는 translateX 가로 전환 (원본 동작).
- * 오버레이가 열릴 때만 wheel 리스너를 부착하고, 닫힐 때 제거한다.
- * → 메인 페이지 filmStory 스크롤과 wheel 이벤트 충돌 없음.
- * macOS 관성 이벤트는 peakDelta 필터 + 500ms 쿨다운으로 차단.
+ * §4.2 준수: event.preventDefault() 없음
+ * §5.2 준수: .canvas-sticky(position:sticky)가 뷰포트 고정 담당,
+ *            #scenario-canvas section 자체는 position:relative + height 제공
+ *
+ * 핵심 원리:
+ *  - #scenario-canvas { height: calc(6 * 100vh) } → 스크롤 소비 공간 (5 슬라이드)
+ *  - .canvas-sticky { position: sticky; top: 0; } → CSS가 뷰포트 고정
+ *  - passive scroll 리스너로 scrollY → 슬라이드 인덱스 매핑
+ *  - open() → window.scrollTo({ top: section.offsetTop }) (이벤트 뺏기 없음)
  */
-export function initScenarioCanvas({ onReturnToGame }) {
+export function initScenarioCanvas({ onReturnToGame } = {}) {
   const root    = document.querySelector("#scenario-canvas");
   const track   = document.querySelector("#scenario-canvas-track");
   const counter = document.querySelector("#scenario-counter");
   const dots    = [...document.querySelectorAll("#scenario-indicator .p-dot")];
-  const back    = document.querySelector("#rewindBtn");
-  const backLabel = back?.getAttribute("aria-label") ?? "";
-  const total   = dots.length;
+  const TOTAL   = dots.length; // 5
 
-  let index      = 0;
-  let openState  = false;
-  let closingState = false;
-
-  // ── 맥 관성 필터 상태 ────────────────────────────────────────────────────
-  let peakDelta        = 0;
-  let inertiaFlushTimer;
-  let cooldownUntil    = 0;
-  const COOLDOWN_MS    = 500;
-
-  // ── 가상 스페이서: 첫 슬라이드에서 위로 스크롤 시 누적 임계값 초과해야 닫힘 ──
-  let closeAccum       = 0;       // 누적 위 방향 deltaY
-  let closeResetTimer;
-  const EXIT_TRANSITION_MS = 760;
-  const EXIT_IDLE_MS = 180;
-  let exitUnlockTimer;
-  let exitStartedAt = 0;
-  const CLOSE_THRESHOLD = 300;   // 이 픽셀 이상 위로 스크롤해야 닫힘
+  let currentIndex = -1;
 
   // ── 렌더 ─────────────────────────────────────────────────────────────────
-  function render() {
-    track.style.transform = `translateX(-${index * 100}%)`;
+  function render(index) {
+    currentIndex = index;
+    if (track) track.style.transform = `translateX(-${index * 100}%)`;
     dots.forEach((dot, i) => dot.classList.toggle("active", i === index));
     if (counter) {
       counter.textContent =
-        `${String(index + 1).padStart(2, "0")} / ${String(total).padStart(2, "0")}`;
+        `${String(index + 1).padStart(2, "0")} / ${String(TOTAL).padStart(2, "0")}`;
     }
   }
 
-  function move(direction) {
-    index = Math.max(0, Math.min(index + direction, total - 1));
-    closeAccum = 0; // 슬라이드 이동 시 누적 리셋
-    render();
-  }
-
-
-  // ── 진입 잠금: transitionend 전까지 아래 스크롤 차단 ────────────────────
-  let isEntryLocked = false;
-
-  function onEntryTransitionDone(e) {
-    if (e.propertyName === "transform") {
-      isEntryLocked = false;
-      root.removeEventListener("transitionend", onEntryTransitionDone);
-    }
-  }
-
-  // ── wheel 핸들러 (오버레이 전용, open 중에만 바인딩) ─────────────────────
-  function handleWheel(event) {
-    event.preventDefault();
-
-    const absDelta = Math.abs(event.deltaY);
-    if (!absDelta) return;
-
-    const direction = Math.sign(event.deltaY);
-
-    // 진입 애니메이션 중: 아래 방향만 차단, 위(닫기 방향)는 허용
-    if (isEntryLocked && direction > 0) return;
-
-    // 80ms 침묵 후 peakDelta 리셋 (새 제스처 시작)
-    window.clearTimeout(inertiaFlushTimer);
-    inertiaFlushTimer = window.setTimeout(() => { peakDelta = 0; }, 80);
-
-    // 관성 잔류: peak 대비 35% 미만이면 무시
-    if (peakDelta > 0 && absDelta < peakDelta * 0.35) return;
-    if (absDelta > peakDelta) peakDelta = absDelta;
-
-    // 쿨다운 중이면 무시
-    const now = performance.now();
-    if (now < cooldownUntil) return;
-
-    if (direction < 0 && index === 0) {
-      // 가상 스페이서: 누적 위 방향 스크롤이 임계값을 넘으면 닫힘
-      closeAccum += absDelta;
-      window.clearTimeout(closeResetTimer);
-      closeResetTimer = window.setTimeout(() => { closeAccum = 0; }, 400);
-
-      if (closeAccum >= CLOSE_THRESHOLD) {
-        closeAccum = 0;
-        close();
-      }
-      return;
-    }
-
-    closeAccum = 0;
-    move(direction);
-    cooldownUntil = now + COOLDOWN_MS;
-  }
-
-  // ── 열기 ─────────────────────────────────────────────────────────────────
-  function open() {
+  // ── passive scroll → 슬라이드 인덱스 계산 ─────────────────────────────────
+  function onScroll() {
     if (!root) return;
-    window.clearTimeout(exitUnlockTimer);
-    document.removeEventListener("wheel", handleExitWheel, true);
-    document.documentElement.classList.remove("scenario-exit-lock");
-    root.classList.remove("closing");
-    closingState = false;
-    openState = true;
-    index = 0;
-    peakDelta = 0;
-    cooldownUntil = 0;
-    closeAccum = 0;
+    const sectionTop    = root.offsetTop;
+    const sectionHeight = root.offsetHeight;
+    const viewportH     = window.innerHeight;
+    const scrollY       = window.scrollY;
+    const maxScroll     = sectionHeight - viewportH;
+    if (maxScroll <= 0) return;
 
-    // 진입 잠금: transform 트랜지션 완료 전까지 아래 스크롤 차단
-    isEntryLocked = true;
-    root.addEventListener("transitionend", onEntryTransitionDone);
+    const relativeScroll = scrollY - sectionTop;
+    // 섹션 범위 바깥이면 무시
+    if (relativeScroll < -viewportH || relativeScroll > maxScroll + viewportH) return;
 
-    render();
-    root.classList.add("active");
-    root.setAttribute("aria-hidden", "false");
-    document.documentElement.classList.add("scenario-open");
-    back?.setAttribute("aria-label", "게임으로 돌아가기");
-
-    // 오버레이가 열릴 때만 wheel 이벤트 바인딩
-    document.addEventListener("wheel", handleWheel, { capture: true, passive: false });
+    const progress   = Math.max(0, Math.min(1, relativeScroll / maxScroll));
+    const slideIndex = Math.min(TOTAL - 1, Math.floor(progress * TOTAL));
+    if (slideIndex !== currentIndex) render(slideIndex);
   }
 
-  // ── 닫기: 레이아웃 무변경, wheel만 차단 ─────────────────────────────────
-  function finishExit() {
-    window.clearTimeout(exitUnlockTimer);
-    document.removeEventListener("wheel", handleExitWheel, true);
-    onReturnToGame();
-    closingState = false;
-    root.classList.remove("closing");
-    document.documentElement.classList.remove("scenario-exit-lock");
-  }
+  window.addEventListener("scroll", onScroll, { passive: true });
 
-  function scheduleExitUnlock() {
-    window.clearTimeout(exitUnlockTimer);
-    const remaining = Math.max(0, EXIT_TRANSITION_MS - (performance.now() - exitStartedAt));
-    exitUnlockTimer = window.setTimeout(finishExit, Math.max(EXIT_IDLE_MS, remaining));
-  }
-
-  function handleExitWheel(e) {
-    e.preventDefault();
-    scheduleExitUnlock();
-  }
-
-  function close() {
-    if (!root || !openState) return;
-    openState = false;
-    closingState = true;
-    exitStartedAt = performance.now();
-
-    document.removeEventListener("wheel", handleWheel, true);
-    window.clearTimeout(inertiaFlushTimer);
-    peakDelta = 0;
-
-    document.documentElement.classList.add("scenario-exit-lock");
-    document.addEventListener("wheel", handleExitWheel, { capture: true, passive: false });
-
-    root.classList.add("closing");
-    root.classList.remove("active");
-    root.setAttribute("aria-hidden", "true");
-    document.documentElement.classList.remove("scenario-open");
-    back?.setAttribute("aria-label", backLabel);
-    scheduleExitUnlock();
-  }
-
-  // ── 인디케이터 점 클릭 ───────────────────────────────────────────────────
-  dots.forEach((dot) => {
+  // ── dot 클릭 → window.scrollTo ────────────────────────────────────────────
+  dots.forEach((dot, i) => {
     dot.addEventListener("click", () => {
-      index = Number(dot.dataset.index ?? "0");
-      render();
+      if (!root) return;
+      const sectionTop = root.offsetTop;
+      const maxScroll  = root.offsetHeight - window.innerHeight;
+      // i번째 슬라이드 시작 위치 (Tech_Test 동일 공식)
+      const targetY    = sectionTop + (i / TOTAL) * maxScroll;
+      window.scrollTo({ top: targetY, behavior: "smooth" });
     });
   });
 
-  // ── 뒤로가기 버튼 ────────────────────────────────────────────────────────
-  back?.addEventListener("click", () => {
-    if (openState) close();
-  });
+  // ── open: 게임 완료 후 캔버스 섹션으로 스크롤 이동 ────────────────────────
+  function open() {
+    if (!root) return;
+    render(0);
+    window.scrollTo({ top: root.offsetTop, behavior: "smooth" });
+  }
 
-  // ── 터치 스와이프 ────────────────────────────────────────────────────────
-  let touchStartX = 0;
-  let touchStartY = 0;
+  // ── isOpen: scrollY가 캔버스 섹션 범위 내인지 확인 ────────────────────────
+  function isOpen() {
+    if (!root) return false;
+    const sectionTop    = root.offsetTop;
+    const sectionHeight = root.offsetHeight;
+    const scrollY       = window.scrollY;
+    // 10% 여유를 두어 섹션 진입 직전도 포함
+    return scrollY >= sectionTop - window.innerHeight * 0.1 &&
+           scrollY < sectionTop + sectionHeight;
+  }
 
-  document.addEventListener("touchstart", (e) => {
-    if (!openState) return;
-    touchStartX = e.changedTouches[0].clientX;
-    touchStartY = e.changedTouches[0].clientY;
-  }, { passive: true });
+  // ── 초기화 ────────────────────────────────────────────────────────────────
+  render(0);
+  onScroll();
 
-  document.addEventListener("touchend", (e) => {
-    if (!openState) return;
-    const dx = touchStartX - e.changedTouches[0].clientX;
-    const dy = touchStartY - e.changedTouches[0].clientY;
-    if (Math.abs(dx) < 40 && Math.abs(dy) < 40) return;
-    const direction = Math.sign(Math.abs(dx) > Math.abs(dy) ? dx : dy);
-    if (direction < 0 && index === 0) close();
-    else move(direction);
-  }, { passive: true });
-
-  return {
-    open,
-    close,
-    isOpen: () => openState || closingState,
-  };
+  return { open, isOpen };
 }
