@@ -33,8 +33,4 @@ function renderScroll() {
   filmStory.update(y);
 }
 
-function handleWheel(deltaY) {
-  return intro.handleWheel(deltaY) || filmStory.handleWheel(deltaY);
-}
-
-initScrollRouter({ onScroll: renderScroll, onWheel: handleWheel });
+initScrollRouter({ onScroll: renderScroll });
