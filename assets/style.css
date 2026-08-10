@@ -53,6 +53,7 @@ html, body {
   position: relative;
   width: 100vw;
   height: 100vh;
+  scroll-snap-align: start;
 }
 
 /* sticky 뷰포트 고정 컨테이너 */
@@ -374,7 +375,7 @@ html, body {
 
 .sequence-segment {
   position: relative;
-  height: calc(var(--sequence-steps, 3) * 150vh);
+  height: calc(var(--sequence-steps, 3) * 100vh);
 }
 
 .sequence-segment[data-steps="1"] { --sequence-steps: 1; }
@@ -383,7 +384,7 @@ html, body {
 
 .game-transition-spacer {
   position: relative;
-  height: 160vh;
+  height: 100vh;
   pointer-events: none;
 }
 

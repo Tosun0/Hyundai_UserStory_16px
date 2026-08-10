@@ -34,4 +34,19 @@ function renderScroll() {
   filmStory.update(y);
 }
 
-initScrollRouter({ onScroll: renderScroll });
+function snapSectionBoundary() {
+  const scrollY = window.scrollY;
+  const threshold = Math.min(window.innerHeight * 0.65, 520);
+  const targets = ["#sq08", "#scenario-canvas"]
+    .map((selector) => document.querySelector(selector)?.offsetTop)
+    .filter((top) => Number.isFinite(top));
+  const target = targets.reduce((closest, top) => {
+    if (Math.abs(top - scrollY) > threshold) return closest;
+    return closest === null || Math.abs(top - scrollY) < Math.abs(closest - scrollY) ? top : closest;
+  }, null);
+
+  if (target === null || Math.abs(target - scrollY) < 1) return;
+  window.scrollTo({ top: target, behavior: "smooth" });
+}
+
+initScrollRouter({ onScroll: renderScroll, onScrollEnd: snapSectionBoundary });
