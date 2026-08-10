@@ -14,15 +14,7 @@
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://hyundai-user-story-16px.vercel.app/Asset/Thumbnail/T_Thumbnail.png">
-  <script>
-    history.scrollRestoration = "manual";
-    window.addEventListener("beforeunload", () => window.scrollTo(0, 0));
-    window.addEventListener("pageshow", (event) => {
-      if (event.persisted) { location.reload(); return; }
-      requestAnimationFrame(() => window.scrollTo(0, 0));
-    });
-  </script>
-  <link rel="stylesheet" href="style.css?v=20260805-pagination-r1">
+  <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
   <svg class="visual-filters" aria-hidden="true">
@@ -32,19 +24,8 @@
     </filter>
   </svg>
 
-  <header class="top-header">
-    <div class="header-center">
-      <h1 class="title-pill">핸들을 놓기엔, 내 인생은 아직 주행 중</h1>
-      <div class="sub-metrics" aria-label="콘텐츠 반응">
-        <span class="metric">조회수 2.8천회</span>
-        <span class="metric">댓글 38개</span>
-        <span class="metric">공유 800회</span>
-      </div>
-    </div>
-  </header>
-
   <main>
-    <section id="sq01" class="sequence--intro" data-section="cover" aria-label="인트로">
+    <section id="cover" class="page-section sequence--intro" aria-label="인트로">
       <div id="vhsCassette" class="vhs-stage-wrapper">
         <div class="film-strip-background">
           <img class="film-strip-img" src="Asset/Playbook/_Screen/T_VideoFilm.png" alt="" draggable="false">
@@ -57,17 +38,17 @@
             <div id="frame3" class="story-frame"><img class="screen-content-img" src="Asset/Playbook/_Story/Cover/T_Concern_02.png" alt="운전을 고민하는 아버지"></div>
           </div>
           <div class="vhs-label-title">고령 운전자의 하루, <span>원점으로</span> 돌아오다.</div>
-          <p id="noteText" class="vhs-orange-note">일정은 똑같은데, 대중교통은 힘들고...<br>어쩔 수 없지만 운전은 해야겠어.</p>
+          <p id="noteText" class="vhs-orange-note">일정은 똑같은데, 대중교통은 힘들고...<br>어째 수 없지만 운전은 해야곊.</p>
           <div id="glitchOverlay" class="glitch-overlay" aria-hidden="true"></div>
         </div>
       </div>
       <button id="scrollPrompt" class="scroll-prompt" type="button">
         <span class="scroll-text">스크롤해서 이야기를 확인해 보세요</span>
-        <span class="scroll-arrow" aria-hidden="true">⌄</span>
+        <span class="scroll-arrow" aria-hidden="true">⌌</span>
       </button>
     </section>
 
-    <section id="filmStory" class="film-story scroll-sequences" data-section="playbook" aria-label="운전 시나리오">
+    <section id="playbook" class="page-section film-story scroll-sequences" aria-label="운전 시나리오">
       <div class="film-story-stage">
         <div class="shared-film-viewport">
           <div class="shared-film">
@@ -107,10 +88,13 @@
         <p class="sequence-bubble">내 운전 경력이 얼만데! 아직 문제 없어!</p>
       </div>
       <div class="film-story-timeline">
-        <div id="sq02" class="sequence-segment" data-sequence="2" data-steps="3" data-title="이제는|예전 같지 않은 반사 신경으로 불안이 커진다" data-highlight="예전 같지 않은 반사 신경" data-bubbles="내 운전 경력이 얼만데! 아직 문제 없어!|어이구, 깜짝이야! 갑자기 오토바이가 나타났네!|이제는 반사 신경이 예전 같지 않네..."><i></i><i></i><i></i></div>
+        <div id="sq02" class="sequence-segment" data-sequence="2" data-steps="3" data-title="이제는|예전 같지 않은 반사 신경으로 불안이 커진다" data-highlight="예전 같지 않은 반사 신경" data-bubbles="내 운전 경력이 얼만데! 아직 문제 없어!|어이구, 꺜짝이야! 갑자기 오토바이가 나타났네!|이제는 반사 신경이 예전 같지 않네..."><i></i><i></i><i></i></div>
         <div class="sequence-segment" data-sequence="3" data-steps="2" data-title="차량 조작에 있어서|공간, 거리 판단의 어려움 증가" data-highlight="공간, 거리 판단의 어려움 증가" data-bubbles="어휴, 공간이 잘 안 나오네...|예전에는 한 번에 주차했는데... 이제는 백미러를 몇 번이나 보게 되네..."><i></i><i></i></div>
-        <div class="sequence-segment" data-sequence="4" data-steps="2" data-title="새로운 기능과 어려운 용어로 기술 습득에 부담" data-highlight="기술 습득에 부담" data-bubbles="딸이 요즘 좋은 기능이 있다고 하던데...|모르는 기능이 너무 많고 복잡한데...\n이걸 어떻게 쓰지?"><i></i><i></i></div>
-        <div class="sequence-segment" data-sequence="5" data-steps="2" data-title="운전을 말리는 주변인들의 걱정과 염려" data-highlight="주변인들의 걱정과 염려" data-bubbles="아빠... 이제는 나이도 있으니 운전을 그만하면 안 돼?\n나 걱정돼서 그래...|이제는 자녀들도 내 운전을 걱정하네...\n진짜 이제 운전을 그만해야 하나..."><i></i><i></i></div>
+        <div class="sequence-segment" data-sequence="4" data-steps="2" data-title="새로운 기능과 어려운 용어로 기술 습득에 부담" data-highlight="기술 습득에 부담" data-bubbles="딸이 요즘 좋은 기능이 있다고 하던데...|모르는 기능이 너무 많고 복잡한데...
+이걸 어떻게 쓰지?"><i></i><i></i></div>
+        <div class="sequence-segment" data-sequence="5" data-steps="2" data-title="운전을 말리는 주변인들의 걱정과 염려" data-highlight="주변인들의 걱정과 염려" data-bubbles="아빠... 이제는 나이도 있으니 운전을 그만하면 안 돼?
+나 걱정돼서 그래...|이제는 자녀들도 내 운전을 걱정하네...
+진짜 이제 운전을 그만해야 하나..."><i></i><i></i></div>
         <div class="sequence-segment" data-sequence="6" data-steps="3" data-title="운전대를 놓으며|멀어진 일상의 주도권" data-highlight="멀어진 일상의 주도권" data-bubbles="자식도 그렇게 말하는데... 대중교통을 탈까?|먼 거리도 아닌데 환승이 몇 번이야?|운전을 그만두니 이동이 버겁네..."><i></i><i></i><i></i></div>
         <div class="sequence-segment" data-sequence="7" data-steps="1" data-title="내 삶을 되찾기 위한 운전의 재선택" data-highlight="운전의 재선택" data-bubbles="그래도 운전은 포기할 수 없어!"><i></i></div>
         <div class="game-transition-spacer"></div>
@@ -120,36 +104,31 @@
     <section id="sq08" class="game-sequence" aria-label="반응 속도 게임">
       <iframe class="game-frame" src="Asset/Playbook/_Game/Game.html?v=20260805-small-wheel-r1" title="야간 주행 반응 속도 체험"></iframe>
     </section>
+
+    <section id="scenario-canvas" class="page-section scenario-canvas-stage" aria-label="시나리오 캔버스">
+      <div class="canvas-track" id="scenario-canvas-track">
+        <div class="canvas-slide"><img src="Asset/ScenarioCanvas/3_ScenarioCanvas_01.jpg" alt="시나리오 캔버스 1"></div>
+        <div class="canvas-slide"><img src="Asset/ScenarioCanvas/3_ScenarioCanvas_02.jpg" alt="시나리오 캔버스 2"></div>
+        <div class="canvas-slide"><img src="Asset/ScenarioCanvas/3_ScenarioCanvas_03.jpg" alt="시나리오 캔버스 3"></div>
+        <div class="canvas-slide"><img src="Asset/ScenarioCanvas/3_ScenarioCanvas_04.jpg" alt="시나리오 캔버스 4"></div>
+        <div class="canvas-slide"><img src="Asset/ScenarioCanvas/3_ScenarioCanvas_05.jpg" alt="시나리오 캔버스 5"></div>
+      </div>
+      <div class="canvas-pagination" id="scenario-indicator">
+        <div class="pagination-dots">
+          <button class="p-dot active" type="button" data-index="0" aria-label="1페이지"></button>
+          <button class="p-dot" type="button" data-index="1" aria-label="2페이지"></button>
+          <button class="p-dot" type="button" data-index="2" aria-label="3페이지"></button>
+          <button class="p-dot" type="button" data-index="3" aria-label="4페이지"></button>
+          <button class="p-dot" type="button" data-index="4" aria-label="5페이지"></button>
+        </div>
+        <span id="scenario-counter" class="pagination-text">01 / 05</span>
+      </div>
+    </section>
   </main>
 
   <button id="gameSkipButton" class="game-skip-button" type="button">게임 건너뛰기</button>
   <div class="bottom-gradient" aria-hidden="true"></div>
 
-  <!--
-    시나리오 캔버스: position fixed 오버레이 유지.
-    내부에 .canvas-scroll-container 를 두어 네이티브 scroll-snap 처리.
-    wheel 이벤트 JS 개입 없음 — 브라우저가 관성 포함 스크롤 전담.
-  -->
-  <section id="scenarioCanvas" class="scenario-canvas-stage" data-section="canvas" aria-label="시나리오 캔버스" aria-hidden="true">
-    <div class="canvas-track" id="scenarioTrack">
-      <div class="canvas-slide"><img src="Asset/ScenarioCanvas/3_ScenarioCanvas_01.jpg" alt="시나리오 캔버스 1"></div>
-      <div class="canvas-slide"><img src="Asset/ScenarioCanvas/3_ScenarioCanvas_02.jpg" alt="시나리오 캔버스 2"></div>
-      <div class="canvas-slide"><img src="Asset/ScenarioCanvas/3_ScenarioCanvas_03.jpg" alt="시나리오 캔버스 3"></div>
-      <div class="canvas-slide"><img src="Asset/ScenarioCanvas/3_ScenarioCanvas_04.jpg" alt="시나리오 캔버스 4"></div>
-      <div class="canvas-slide"><img src="Asset/ScenarioCanvas/3_ScenarioCanvas_05.jpg" alt="시나리오 캔버스 5"></div>
-    </div>
-    <div class="canvas-pagination" id="scenarioIndicator">
-      <div class="pagination-dots">
-        <button class="p-dot active" type="button" data-index="0" aria-label="1페이지"></button>
-        <button class="p-dot" type="button" data-index="1" aria-label="2페이지"></button>
-        <button class="p-dot" type="button" data-index="2" aria-label="3페이지"></button>
-        <button class="p-dot" type="button" data-index="3" aria-label="4페이지"></button>
-        <button class="p-dot" type="button" data-index="4" aria-label="5페이지"></button>
-      </div>
-      <span id="scenarioCounter" class="pagination-text">01 / 05</span>
-    </div>
-  </section>
-
-  <script type="module" src="app.js?v=20260806-overlay-native-r1"></script>
+  <script type="module" src="assets/app.js"></script>
 </body>
 </html>

@@ -1,11 +1,11 @@
 export function initVhsIntro() {
-  const root = document.querySelector("#sq01");
+  const root = document.querySelector("#cover");
   const frames = [...document.querySelectorAll(".story-frame")];
   const note = document.querySelector("#noteText");
   const glitch = document.querySelector("#glitchOverlay");
   const prompt = document.querySelector("#scrollPrompt");
   const rewind = document.querySelector("#rewindBtn");
-  const filmStory = document.querySelector("#filmStory");
+  const filmStory = document.querySelector("#playbook");
   const notes = [
     "일정은 똑같은데, 대중교통은 힘들고...<br>어쩔 수 없지만 운전은 해야겠어.",
     "버스는 40분에 한 대뿐이고... 장을 보러 갈 때는<br>무거운 짐 때문에 결국 차를 끌고 나와.",

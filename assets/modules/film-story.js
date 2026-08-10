@@ -3,7 +3,7 @@ export function shouldAdvanceToGame({ sequence, step, direction, locked, stepCou
 }
 
 export function initFilmStory() {
-  const root = document.querySelector("#filmStory");
+  const root = document.querySelector("#playbook");
   const stage = root?.querySelector(".film-story-stage");
   const viewport = root?.querySelector(".shared-film-viewport");
   const film = root?.querySelector(".shared-film");

@@ -7,10 +7,10 @@
  * macOS 관성 이벤트는 peakDelta 필터 + 500ms 쿨다운으로 차단.
  */
 export function initScenarioCanvas({ onReturnToGame }) {
-  const root    = document.querySelector("#scenarioCanvas");
-  const track   = document.querySelector("#scenarioTrack");
-  const counter = document.querySelector("#scenarioCounter");
-  const dots    = [...document.querySelectorAll("#scenarioIndicator .p-dot")];
+  const root    = document.querySelector("#scenario-canvas");
+  const track   = document.querySelector("#scenario-canvas-track");
+  const counter = document.querySelector("#scenario-counter");
+  const dots    = [...document.querySelectorAll("#scenario-indicator .p-dot")];
   const back    = document.querySelector("#rewindBtn");
   const backLabel = back?.getAttribute("aria-label") ?? "";
   const total   = dots.length;
