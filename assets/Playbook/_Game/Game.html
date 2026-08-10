@@ -725,7 +725,6 @@
   }
   window.addEventListener('wheel',event=>{
     if(event.deltaY<0 && window.scrollY<=0){
-      event.preventDefault();
       window.parent.postMessage({type:'canvas-playbook:game-scroll-up'},'*');
       return;
     }

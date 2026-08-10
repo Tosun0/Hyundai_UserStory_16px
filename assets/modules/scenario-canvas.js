@@ -13,7 +13,6 @@
  */
 export function initScenarioCanvas({ onReturnToGame } = {}) {
   const root    = document.querySelector("#scenario-canvas");
-  const track   = document.querySelector("#scenario-canvas-track");
   const counter = document.querySelector("#scenario-counter");
   const dots    = [...document.querySelectorAll("#scenario-indicator .p-dot")];
   const TOTAL   = dots.length; // 5
@@ -23,7 +22,9 @@ export function initScenarioCanvas({ onReturnToGame } = {}) {
   // ── 렌더 ─────────────────────────────────────────────────────────────────
   function render(index) {
     currentIndex = index;
-    if (track) track.style.transform = `translateX(-${index * 100}%)`;
+    root.querySelectorAll(".canvas-slide").forEach((slide, i) => {
+      slide.classList.toggle("active", i === index);
+    });
     dots.forEach((dot, i) => dot.classList.toggle("active", i === index));
     if (counter) {
       counter.textContent =
@@ -32,12 +33,11 @@ export function initScenarioCanvas({ onReturnToGame } = {}) {
   }
 
   // ── passive scroll → 슬라이드 인덱스 계산 ─────────────────────────────────
-  function onScroll() {
+  function update(scrollY = window.scrollY) {
     if (!root) return;
     const sectionTop    = root.offsetTop;
     const sectionHeight = root.offsetHeight;
     const viewportH     = window.innerHeight;
-    const scrollY       = window.scrollY;
     const maxScroll     = sectionHeight - viewportH;
     if (maxScroll <= 0) return;
 
@@ -49,8 +49,6 @@ export function initScenarioCanvas({ onReturnToGame } = {}) {
     const slideIndex = Math.min(TOTAL - 1, Math.floor(progress * TOTAL));
     if (slideIndex !== currentIndex) render(slideIndex);
   }
-
-  window.addEventListener("scroll", onScroll, { passive: true });
 
   // ── dot 클릭 → window.scrollTo ────────────────────────────────────────────
   dots.forEach((dot, i) => {
@@ -84,7 +82,7 @@ export function initScenarioCanvas({ onReturnToGame } = {}) {
 
   // ── 초기화 ────────────────────────────────────────────────────────────────
   render(0);
-  onScroll();
+  update();
 
-  return { open, isOpen };
+  return { open, isOpen, update };
 }

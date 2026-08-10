@@ -27,6 +27,7 @@ gameSequence = initGameSequence({
 
 function renderScroll() {
   // 시나리오 캔버스가 열려 있으면 메인 스크롤 업데이트 불필요
+  scenarioCanvas.update(window.scrollY);
   if (scenarioCanvas.isOpen()) return;
   const y = window.scrollY;
   intro.update(y);
