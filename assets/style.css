@@ -53,6 +53,7 @@ html, body {
   position: relative;
   width: 100vw;
   height: 100vh;
+  min-height: 100vh;
   scroll-snap-align: start;
 }
 
@@ -266,6 +267,7 @@ html, body {
    ========================================================================== */
 .film-story {
   position: relative;
+  min-height: 100vh;
   scroll-snap-align: start;
   z-index: 15;
 }
@@ -1617,6 +1619,7 @@ body.game-chrome-hidden .scroll-prompt {
   position: relative;
   scroll-snap-align: start;
   height: calc(6 * 100vh); /* 5 슬라이드 × 스크롤 소비 공간 */
+  min-height: 100vh;
   background: #0a0e17;
 }
 
