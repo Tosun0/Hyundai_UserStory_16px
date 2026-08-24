@@ -723,20 +723,6 @@
     window.parent.postMessage({type:'canvas-playbook:scenario-open'},'*');
     setTimeout(()=>{ scenarioNavigationLocked=false; },700);
   }
-  window.addEventListener('wheel',event=>{
-    if(event.deltaY<0 && window.scrollY<=0){
-      window.parent.postMessage({type:'canvas-playbook:game-scroll-up'},'*');
-      return;
-    }
-    if(event.deltaY>0) requestScenarioCanvas();
-  },{passive:false});
-  window.addEventListener('touchstart',event=>{
-    scenarioTouchStartY=event.changedTouches[0].clientY;
-  },{passive:true});
-  window.addEventListener('touchend',event=>{
-    if(scenarioTouchStartY-event.changedTouches[0].clientY>50) requestScenarioCanvas();
-  },{passive:true});
-
   if(window.self===window.top) setStoryVisibility(true);
 
   resize();
