@@ -1610,7 +1610,7 @@ body.game-chrome-hidden .scroll-prompt {
 /* Journal형 시나리오 캔버스: 단일 세로 SVG를 네이티브 스크롤로 표시 */
 .journal-section {
   width: 100%;
-  background: #0a0e17;
+  background: #FFFFFF;
   scroll-snap-align: none;
 }
 
