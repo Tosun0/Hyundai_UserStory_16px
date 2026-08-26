@@ -1568,8 +1568,6 @@ body.game-chrome-hidden .scroll-prompt {
   .film-section__title,
   .film-section__frame { transform: none; filter: none; }
   .sequence-copy { animation: none; }
-  .canvas-slide img,
-  .canvas-pagination { transition: none; }
   .vhs-label-title span::before,
   .title-highlight::before,
   .sequence-title .title-highlight::before {
@@ -1609,118 +1607,23 @@ body.game-chrome-hidden .scroll-prompt {
   letter-spacing: -.4px;
 }
 
-/* ──────────────────────────────────────────────
-   시나리오 캔버스: sticky-scroll 방식 (§4.2/§5.2 준수)
-   - section 자체: position:relative, height = 스크롤 소비 공간
-   - .canvas-sticky: position:sticky — CSS가 뷰포트 고정
-   - JS는 scrollY 읽어 슬라이드 전환만 담당 (preventDefault 없음)
-   ────────────────────────────────────────────── */
-.scenario-canvas-stage {
-  position: relative;
-  scroll-snap-align: start;
-  height: calc(6 * 100vh); /* 5 슬라이드 × 스크롤 소비 공간 */
-  min-height: 100vh;
+/* Journal형 시나리오 캔버스: 단일 세로 SVG를 네이티브 스크롤로 표시 */
+.journal-section {
+  width: 100%;
   background: #0a0e17;
+  scroll-snap-align: none;
 }
 
-.canvas-sticky {
-  position: sticky;
-  top: 0;
+.journal-frame {
   width: 100%;
-  height: 100vh;
-  overflow: hidden;
-  background: #0a0e17;
-  display: grid;
-  place-items: center;
+  max-width: 1920px;
+  margin: 0 auto;
 }
 
-/* 캔버스 트랙: translateX 가로 전환 (원본 동작) */
-.canvas-track {
-  position: absolute;
-  inset: 0;
-  display: grid;
+.journal-svg {
+  display: block;
   width: 100%;
-  height: 100%;
-}
-
-.canvas-slide {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: grid;
-  place-items: center;
-  opacity: 0;
-  transform: scale(.97) translateY(10px);
-  pointer-events: none;
-  transition:
-    opacity 460ms ease,
-    transform 560ms cubic-bezier(.16, 1, .3, 1);
-}
-
-.canvas-slide.active {
-  opacity: 1;
-  transform: scale(1) translateY(0);
-  pointer-events: auto;
-}
-
-.canvas-slide img {
-  width: 90%;
   height: auto;
-  max-height: 80%;
-  object-fit: contain;
-  user-select: none;
-}
-
-/* 인디케이터: 오버레이 내부 absolute */
-.canvas-pagination {
-  position: absolute;
-  z-index: 20;
-  bottom: 40px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 18px;
-  border: 1px solid rgba(255, 255, 255, .08);
-  border-radius: 26px;
-  background: rgba(255, 255, 255, .12);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, .3);
-}
-
-/* html.scenario-open — 오버레이 제거로 불필요 (sticky-scroll로 전환됨) */
-
-.pagination-dots {
-  display: flex;
-  gap: 6px;
-}
-
-.p-dot {
-  width: 6px;
-  height: 6px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: rgb(255 255 255 / .35);
-  cursor: pointer;
-  transition: background-color 200ms ease, transform 200ms ease;
-}
-
-.p-dot.active {
-  background: #ffffff;
-  transform: scale(1.2);
-}
-
-.pagination-text {
-  color: #ffffff;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: .5px;
-  font-variant-numeric: tabular-nums;
 }
 
 @media (max-width: 760px) and (orientation: portrait) {
@@ -1749,10 +1652,6 @@ body.game-chrome-hidden .scroll-prompt {
     font-size: 11px;
   }
 
-  .canvas-snap-section img {
-    width: 96%;
-    max-height: 76%;
-  }
 }
 
 /* Screen-reader only — §8.1 */
