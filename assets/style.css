@@ -437,6 +437,10 @@ html, body {
   width: 1px;
   height: 1px;
 }
+.sequence-segment > i {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
 .sequence-segment > i:nth-child(1) { top: 0; }
 .sequence-segment > i:nth-child(2) { top: 33.333%; }
 .sequence-segment > i:nth-child(3) { top: 66.666%; }
@@ -670,6 +674,7 @@ body.game-to-scenario-zone .bottom-gradient {
 .game-sequence {
   position: relative;
   scroll-snap-align: start;
+  scroll-snap-stop: always;
   z-index: 10;
   width: 100%;
   height: 100vh;
