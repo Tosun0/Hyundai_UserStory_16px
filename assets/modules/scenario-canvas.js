@@ -6,7 +6,6 @@ export function initScenarioCanvas({ onReturnToGame } = {}) {
     if (!root || isVisible === visible) return;
     isVisible = visible;
     root.classList.toggle("is-visible", visible);
-    document.body.classList.toggle("scenario-canvas-visible", visible);
   };
 
   if (root && "IntersectionObserver" in window) {
@@ -18,7 +17,11 @@ export function initScenarioCanvas({ onReturnToGame } = {}) {
     syncVisibility(true);
   }
 
-  function update() {}
+  function update(scrollY = window.scrollY) {
+    if (!root) return;
+    const rootTop = root.getBoundingClientRect().top + scrollY;
+    document.body.classList.toggle("scenario-canvas-entered", scrollY >= rootTop);
+  }
 
   function open() {
     if (!root) return;

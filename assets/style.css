@@ -653,7 +653,7 @@ html, body {
   transition: opacity 420ms ease;
 }
 
-body.scenario-canvas-visible .bottom-gradient {
+body.scenario-canvas-entered .bottom-gradient {
   opacity: 0;
   visibility: hidden;
 }
