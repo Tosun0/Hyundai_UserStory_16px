@@ -653,6 +653,11 @@ html, body {
   transition: opacity 420ms ease;
 }
 
+body.scenario-canvas-visible .bottom-gradient {
+  opacity: 0;
+  visibility: hidden;
+}
+
 
 /* ==========================================================================
    SQ08 — INTEGRATED MINI GAME
@@ -1611,7 +1616,13 @@ body.game-chrome-hidden .scroll-prompt {
 .journal-section {
   width: 100%;
   background: #FFFFFF;
+  opacity: 0;
   scroll-snap-align: none;
+  transition: opacity 560ms cubic-bezier(.22, 1, .36, 1);
+}
+
+.journal-section.is-visible {
+  opacity: 1;
 }
 
 .journal-frame {
@@ -1624,6 +1635,12 @@ body.game-chrome-hidden .scroll-prompt {
   display: block;
   width: 100%;
   height: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .journal-section {
+    transition: none;
+  }
 }
 
 @media (max-width: 760px) and (orientation: portrait) {
