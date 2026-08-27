@@ -22,6 +22,50 @@ export function initFilmStory() {
   let gameReturnY = 0;
   let highlightLatched = false;
   let everVisible = false;   // is-visible 한 번 켜지면 영구 유지 (애니메이션 재트리거 방지)
+  let stepSnapLocked = false;
+  let wheelDelta = 0;
+  let wheelResetTimer;
+
+  function getStepSnapPoints() {
+    return segments.flatMap((segment) => [...segment.children]
+      .filter((child) => child.tagName === "I")
+      .map((marker) => marker.getBoundingClientRect().top + window.scrollY));
+  }
+
+  function snapFilmStep(direction) {
+    const scrollY = window.scrollY;
+    const snapPoints = getStepSnapPoints();
+    const target = direction > 0
+      ? snapPoints.find((top) => top > scrollY + 4)
+      : [...snapPoints].reverse().find((top) => top < scrollY - 4);
+
+    if (!Number.isFinite(target)) return false;
+    stepSnapLocked = true;
+    window.scrollTo({ top: target, behavior: "smooth" });
+    window.setTimeout(() => { stepSnapLocked = false; }, 900);
+    return true;
+  }
+
+  function handleStepWheel(event) {
+    if (event.ctrlKey || document.documentElement.classList.contains("scenario-open")) return;
+    if (stepSnapLocked) {
+      event.preventDefault();
+      return;
+    }
+
+    const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? window.innerHeight : 1;
+    wheelDelta += event.deltaY * unit;
+    window.clearTimeout(wheelResetTimer);
+    wheelResetTimer = window.setTimeout(() => { wheelDelta = 0; }, 120);
+    if (Math.abs(wheelDelta) < 24) {
+      event.preventDefault();
+      return;
+    }
+
+    const direction = Math.sign(wheelDelta);
+    wheelDelta = 0;
+    if (snapFilmStep(direction)) event.preventDefault();
+  }
 
   function advanceToGame(direction) {
     if (!shouldAdvanceToGame({ sequence: activeSequence, step: activeStep, stepCount: activeStepCount, direction, locked: gameSnapLocked })) return false;
@@ -169,6 +213,8 @@ export function initFilmStory() {
     if (document.documentElement.classList.contains("scenario-open") || !direction) return false;
     return advanceToGame(direction);
   }
+
+  root?.addEventListener("wheel", handleStepWheel, { passive: false });
 
   return { update, handleWheel, handleSwipe, getGameReturnY: () => gameReturnY };
 }

@@ -28,7 +28,7 @@ html, body {
   font-family: var(--font-sans);
   overflow-x: clip;
   scroll-behavior: smooth;
-  scroll-snap-type: y mandatory;
+  scroll-snap-type: y proximity;
 }
 
 .visual-filters {
