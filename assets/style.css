@@ -658,6 +658,11 @@ body.scenario-canvas-entered .bottom-gradient {
   visibility: hidden;
 }
 
+body.game-to-scenario-zone .bottom-gradient {
+  opacity: 0;
+  visibility: hidden;
+}
+
 
 /* ==========================================================================
    SQ08 — INTEGRATED MINI GAME
