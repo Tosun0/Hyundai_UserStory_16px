@@ -2,7 +2,7 @@
  * Hyundai UserStory 16px
  *
  * 16px_Ref 방식:
- *   - wheel 이벤트는 scroll-router에서 필름↔게임 경계만 처리
+ *   - 네이티브 스크롤과 CSS 스냅으로 필름↔게임 경계 처리
  *   - window.scroll (passive) 로 scrollY 읽어 intro/filmStory 업데이트
  *   - scenarioCanvas: fixed 오버레이 유지, 내부 scroll-snap 컨테이너로 슬라이드 전환
  *   - filmStory: 네이티브 스크롤 유지, 마지막 구간만 게임 전환
@@ -40,20 +40,4 @@ function renderScroll() {
   filmStory.update(y);
 }
 
-function snapSectionBoundary(direction) {
-  if (!direction) return;
-  const scrollY = window.scrollY;
-  const threshold = Math.min(window.innerHeight * 0.65, 520);
-  const targets = ["#cover", "#playbook", "#sq08", "#scenario-canvas"]
-    .map((selector) => document.querySelector(selector)?.offsetTop)
-    .filter((top) => Number.isFinite(top));
-  const nextTargets = targets
-    .filter((top) => direction > 0 ? top > scrollY : top < scrollY)
-    .sort((first, second) => direction > 0 ? first - second : second - first);
-  const target = nextTargets[0] ?? null;
-
-  if (target === null || Math.abs(target - scrollY) > threshold) return;
-  window.scrollTo({ top: target, behavior: "smooth" });
-}
-
-initScrollRouter({ onScroll: renderScroll, onScrollEnd: snapSectionBoundary });
+initScrollRouter({ onScroll: renderScroll });
