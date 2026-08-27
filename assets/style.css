@@ -432,19 +432,12 @@ html, body {
 }
 
 .sequence-segment > i {
-  position: absolute;
-  left: 0;
-  width: 1px;
-  height: 1px;
-}
-.sequence-segment > i {
+  position: relative;
+  width: 100%;
+  height: 50vh;
   scroll-snap-align: start;
   scroll-snap-stop: always;
 }
-.sequence-segment > i:nth-child(1) { top: 0; }
-.sequence-segment > i:nth-child(2) { top: 33.333%; }
-.sequence-segment > i:nth-child(3) { top: 66.666%; }
-.sequence-segment[data-steps="2"] > i:nth-child(2) { top: 50%; }
 
 .shared-film-viewport {
   position: absolute;
