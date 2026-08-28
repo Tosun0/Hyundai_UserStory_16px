@@ -11,7 +11,7 @@ export function initScenarioCanvas({ onReturnToGame } = {}) {
   if (root && "IntersectionObserver" in window) {
     const observer = new IntersectionObserver(([entry]) => {
       syncVisibility(entry.isIntersecting);
-    }, { threshold: 0.12 });
+    }, { threshold: 0 });
     observer.observe(root);
   } else {
     syncVisibility(true);
