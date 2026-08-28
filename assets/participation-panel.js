@@ -87,7 +87,7 @@
     const roots = [...document.querySelectorAll("[data-userstory-participation]")];
     const instances = roots.map((root) => createParticipationPanel(root, window.USERSTORY_PARTICIPATION_CONFIG || {}));
     const instance = instances[0];
-    const sections = [...document.querySelectorAll("main [data-screen-id][id]")];
+    const sections = [...document.querySelectorAll("main .page-section[id]")];
     if (instance && "IntersectionObserver" in window) {
       const visibleSections = new Set();
       const observer = new IntersectionObserver((entries) => {
