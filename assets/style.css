@@ -1624,7 +1624,7 @@ body.game-chrome-hidden .scroll-prompt {
   width: 100%;
   background: #FFFFFF;
   opacity: 0;
-  scroll-snap-align: none;
+  scroll-snap-align: start;
   transition: opacity 560ms cubic-bezier(.22, 1, .36, 1);
 }
 
