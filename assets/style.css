@@ -28,7 +28,7 @@ html, body {
   font-family: var(--font-sans);
   overflow-x: clip;
   scroll-behavior: smooth;
-  scroll-snap-type: y proximity;
+  scroll-snap-type: y mandatory;
 }
 
 .visual-filters {
@@ -686,9 +686,11 @@ body.game-to-scenario-zone .bottom-gradient {
 
 .game-frame {
   display: block;
-  width: 100%;
-  height: 100%;
+  width: min(100%, calc(100dvh * 16 / 10));
+  height: auto;
+  aspect-ratio: 16 / 10;
   min-height: 0;
+  margin: auto;
   border: 0;
   background: #354B3B;
 }
@@ -754,7 +756,8 @@ body.game-chrome-hidden .scroll-prompt {
   }
 
   .game-frame {
-    height: 100%;
+    width: min(100%, calc(100svh * 16 / 10));
+    height: auto;
     min-height: 0;
   }
 }
