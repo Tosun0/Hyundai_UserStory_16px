@@ -1640,7 +1640,7 @@ body.game-chrome-hidden .scroll-prompt {
 
 .journal-frame {
   width: 100%;
-  max-width: none;
+  max-width: 1920px;
   margin: 0 auto;
 }
 
