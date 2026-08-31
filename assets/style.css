@@ -31,6 +31,10 @@ html, body {
   scroll-snap-type: y mandatory;
 }
 
+html.scenario-open {
+  scroll-snap-type: none;
+}
+
 .visual-filters {
   position: absolute;
   width: 0;

@@ -22,6 +22,8 @@ export function initScenarioCanvas({ onReturnToGame } = {}) {
     const rootTop = root.getBoundingClientRect().top + scrollY;
     const game = document.querySelector("#sq08");
     const gameTop = game ? game.getBoundingClientRect().top + scrollY : rootTop;
+    const isScenarioZone = scrollY >= rootTop;
+    document.documentElement.classList.toggle("scenario-open", isScenarioZone);
     document.body.classList.toggle("scenario-canvas-entered", scrollY >= rootTop);
     document.body.classList.toggle("game-to-scenario-zone", scrollY >= gameTop);
   }
